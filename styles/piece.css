@@ -1,0 +1,19 @@
+.darkPiece {
+  background-color: #4a2e1b;
+  border-radius: 50%;
+  width: 80%;
+  height: 80%;
+  border: 2px solid #432a15;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.lightPiece {
+  background-color: #f7e7ce;
+  border-radius: 50%;
+  width: 80%;
+  height: 80%;
+  border: 2px solid #c3b59f;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}

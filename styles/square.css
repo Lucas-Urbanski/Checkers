@@ -1,0 +1,12 @@
+.lightSquare {
+  background-color: #f0d9b5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.darkSquare {
+  background: linear-gradient(#8a664a, #b58863);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
