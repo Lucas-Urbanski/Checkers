@@ -217,63 +217,6 @@ export default function Settings() {
               </div>
             </div>
           </section>
-
-          <aside className="space-y-6">
-            <section className="rounded-3xl border border-[#dcc5ad] bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-black">Board Preview</h2>
-              <p className="mt-1 text-sm text-[#6f5848]">
-                Using your selected checkerboard colors.
-              </p>
-
-              <div className="mt-6 grid aspect-square grid-cols-4 overflow-hidden rounded-2xl border-4 border-[#855f42]">
-                {Array.from({ length: 16 }).map((_, index) => {
-                  const row = Math.floor(index / 4);
-                  const column = index % 4;
-                  const darkSquare = (row + column) % 2 !== 0;
-
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-center justify-center"
-                      style={{
-                        backgroundColor: darkSquare ? "#855f42" : "#edd9c2",
-                      }}
-                    >
-                      {darkSquare && index % 3 === 0 && (
-                        <div className="h-8 w-8 rounded-full border-2 border-[#2b1f18] bg-[#3a2a21]" />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-
-            <section className="rounded-3xl border border-[#dcc5ad] bg-[#2b1f18] p-6 text-[#edd9c2] shadow-sm">
-              <h2 className="text-xl font-black">Current Setup</h2>
-
-              <div className="mt-5 space-y-3 text-sm">
-                <div className="flex justify-between border-b border-[#edd9c2]/20 pb-2">
-                  <span className="font-bold">Name</span>
-                  <span>{settings.playerName || "Guest"}</span>
-                </div>
-
-                <div className="flex justify-between border-b border-[#edd9c2]/20 pb-2">
-                  <span className="font-bold">AI</span>
-                  <span>{settings.aiDifficulty}</span>
-                </div>
-
-                <div className="flex justify-between border-b border-[#edd9c2]/20 pb-2">
-                  <span className="font-bold">Side</span>
-                  <span>{settings.playerSide}</span>
-                </div>
-
-                <div className="flex justify-between border-b border-[#edd9c2]/20 pb-2">
-                  <span className="font-bold">Hints</span>
-                  <span>{settings.showHints ? "On" : "Off"}</span>
-                </div>
-              </div>
-            </section>
-          </aside>
         </div>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
