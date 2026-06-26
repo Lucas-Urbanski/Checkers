@@ -30,6 +30,12 @@ export default function Home() {
         >
         Play Against AI
         </Link>
+        <Link
+        href="/settings"
+        className="flex h-10 text-center mt-5 items-center justify-center text-2xl rounded-xl bg-white px-4 font-bold text-zinc-800 transition hover:bg-zinc-200"
+        >
+        Settings
+        </Link>
       </div>
     </div>
   );

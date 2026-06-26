@@ -1,11 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-const defaultSettings = {
+type CheckerSettings = {
+  playerName: string;
+  playerSide: string;
+  showHints: boolean;
+  soundEffects: boolean;
+  animations: boolean;
+  onlineMatchmaking: boolean;
+};
+
+const defaultSettings: CheckerSettings = {
   playerName: "",
-  aiDifficulty: "Normal",
   playerSide: "Random",
   showHints: true,
   soundEffects: true,
@@ -13,19 +21,35 @@ const defaultSettings = {
   onlineMatchmaking: true,
 };
 
-export default function Settings() {
-  const [settings, setSettings] = useState(defaultSettings);
-  const [saved, setSaved] = useState(false);
+function loadSettings(): CheckerSettings {
+  if (typeof window === "undefined") {
+    return defaultSettings;
+  }
 
-  useEffect(() => {
+  try {
     const savedSettings = localStorage.getItem("checkerSettings");
 
-    if (savedSettings) {
-      setSettings(JSON.parse(savedSettings));
+    if (!savedSettings) {
+      return defaultSettings;
     }
-  }, []);
 
-  function updateSetting(key: string, value: string | boolean) {
+    return {
+      ...defaultSettings,
+      ...JSON.parse(savedSettings),
+    };
+  } catch {
+    return defaultSettings;
+  }
+}
+
+export default function Settings() {
+  const [settings, setSettings] = useState<CheckerSettings>(loadSettings);
+  const [saved, setSaved] = useState(false);
+
+  function updateSetting<K extends keyof CheckerSettings>(
+    key: K,
+    value: CheckerSettings[K],
+  ) {
     setSaved(false);
 
     setSettings((previousSettings) => ({
@@ -60,7 +84,7 @@ export default function Settings() {
             href="/"
             className="rounded-xl bg-[#855f42] px-5 py-3 text-sm font-bold text-[#edd9c2] transition hover:bg-[#6f4d34]"
           >
-            Back Home
+            Back
           </Link>
         </header>
 
@@ -68,8 +92,7 @@ export default function Settings() {
           <section className="rounded-3xl border border-[#dcc5ad] bg-white p-8 shadow-sm">
             <h2 className="text-2xl font-black">Game Preferences</h2>
             <p className="mt-1 text-sm text-[#6f5848]">
-              These settings will be used for local games, online matches, and
-              AI matches.
+              These settings will be used for local games and online matches.
             </p>
 
             <div className="mt-8 space-y-7">
@@ -85,29 +108,6 @@ export default function Settings() {
                   placeholder="Enter your name"
                   className="w-full rounded-2xl border border-[#dcc5ad] bg-[#fffaf5] px-5 py-4 text-sm font-medium outline-none transition focus:border-[#855f42] focus:bg-white"
                 />
-              </div>
-
-              <div className="space-y-3">
-                <label className="text-xs font-black uppercase tracking-widest text-[#855f42]">
-                  AI Difficulty
-                </label>
-
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {["Easy", "Normal", "Hard"].map((difficulty) => (
-                    <button
-                      key={difficulty}
-                      type="button"
-                      onClick={() => updateSetting("aiDifficulty", difficulty)}
-                      className={
-                        settings.aiDifficulty === difficulty
-                          ? "rounded-2xl border border-[#855f42] bg-[#855f42] px-4 py-3 text-sm font-bold text-[#edd9c2]"
-                          : "rounded-2xl border border-[#dcc5ad] bg-[#fffaf5] px-4 py-3 text-sm font-bold text-[#2b1f18] transition hover:bg-[#edd9c2]"
-                      }
-                    >
-                      {difficulty}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               <div className="space-y-3">
@@ -136,7 +136,9 @@ export default function Settings() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <button
                   type="button"
-                  onClick={() => updateSetting("showHints", !settings.showHints)}
+                  onClick={() =>
+                    updateSetting("showHints", !settings.showHints)
+                  }
                   className="rounded-2xl border border-[#dcc5ad] bg-[#fffaf5] p-4 text-left transition hover:bg-[#edd9c2]"
                 >
                   <div className="flex items-center justify-between gap-4">
