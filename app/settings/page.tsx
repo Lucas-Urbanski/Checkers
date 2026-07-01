@@ -155,10 +155,10 @@ export default function Settings() {
       </section>
 
       <div className="flex mt-6 gap-4">
-        <button type="button" onClick={saveSettings} className="button">
+        <button type="button" onClick={saveSettings} className="button w-1/2 sm:w-1/3 md:w-1/5">
           Save Settings
         </button>
-        <button type="button" onClick={resetSettings} className="button">
+        <button type="button" onClick={resetSettings} className="button w-1/2 sm:w-1/3 md:w-1/5">
           Reset
         </button>
       </div>
