@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import "@/styles/settings.css";
 
 type CheckerSettings = {
   playerName: string;
@@ -22,25 +23,46 @@ const defaultSettings: CheckerSettings = {
 };
 
 function loadSettings(): CheckerSettings {
-  if (typeof window === "undefined") {
-    return defaultSettings;
-  }
-
+  if (typeof window === "undefined") return defaultSettings;
   try {
-    const savedSettings = localStorage.getItem("checkerSettings");
-
-    if (!savedSettings) {
-      return defaultSettings;
-    }
-
-    return {
-      ...defaultSettings,
-      ...JSON.parse(savedSettings),
-    };
+    const saved = localStorage.getItem("checkerSettings");
+    return saved
+      ? { ...defaultSettings, ...JSON.parse(saved) }
+      : defaultSettings;
   } catch {
     return defaultSettings;
   }
 }
+
+const TOGGLES: {
+  key: keyof Pick<
+    CheckerSettings,
+    "showHints" | "soundEffects" | "animations" | "onlineMatchmaking"
+  >;
+  label: string;
+  desc: string;
+}[] = [
+  {
+    key: "showHints",
+    label: "Show Move Hints",
+    desc: "Highlight possible moves.",
+  },
+  {
+    key: "soundEffects",
+    label: "Sound Effects",
+    desc: "Play sounds during moves.",
+  },
+  {
+    key: "animations",
+    label: "Animations",
+    desc: "Use smooth checker movement.",
+  },
+  {
+    key: "onlineMatchmaking",
+    label: "Online Matchmaking",
+    desc: "Allow random online matches later.",
+  },
+];
 
 export default function Settings() {
   const [settings, setSettings] = useState<CheckerSettings>(loadSettings);
@@ -51,11 +73,7 @@ export default function Settings() {
     value: CheckerSettings[K],
   ) {
     setSaved(false);
-
-    setSettings((previousSettings) => ({
-      ...previousSettings,
-      [key]: value,
-    }));
+    setSettings((prev) => ({ ...prev, [key]: value }));
   }
 
   function saveSettings() {
@@ -70,181 +88,91 @@ export default function Settings() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f5efe6] px-6 py-10 text-[#2b1f18]">
-      <div className="mx-auto max-w-4xl">
-        <header className="mb-10 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-black">Settings</h1>
-            <p className="mt-2 text-sm font-medium text-[#6f5848]">
-              Customize your checkers experience.
-            </p>
+    <main className="m-4 sm:m-6 md:m-8 lg:m-10">
+      <header className="flex justify-between">
+        <div>
+          <h1 className="title">Settings</h1>
+          <p className="subtitle">Customize your checkers experience.</p>
+        </div>
+        <Link href="/" className="button">
+          Back
+        </Link>
+      </header>
+
+      <section className="card flex flex-col gap-6">
+        <h2 className="cardTitle">Game Preferences</h2>
+        <div className="fieldGroup">
+          <label className="label">Player Name</label>
+          <input
+            value={settings.playerName}
+            onChange={(e) => updateSetting("playerName", e.target.value)}
+            placeholder="Enter your name"
+            className="input"
+          />
+        </div>
+
+        <div className="fieldGroup">
+          <label className="label">Player Side</label>
+          <div className="sideGrid">
+            {["Random", "Light", "Dark"].map((side) => (
+              <button
+                key={side}
+                type="button"
+                onClick={() => updateSetting("playerSide", side)}
+                className={
+                  settings.playerSide === side
+                    ? "rounded-2xl border border-[#855f42] bg-[#855f42] px-4 py-3 mr-2 text-sm font-bold text-[#edd9c2]"
+                    : "rounded-2xl border border-[#dcc5ad] bg-[#fffaf5] px-4 py-3 mr-2 text-sm font-bold text-[#2b1f18] transition hover:bg-[#edd9c2]"
+                }
+              >
+                {side}
+              </button>
+            ))}
           </div>
+        </div>
 
-          <Link
-            href="/"
-            className="rounded-xl bg-[#855f42] px-5 py-3 text-sm font-bold text-[#edd9c2] transition hover:bg-[#6f4d34]"
-          >
-            Back
-          </Link>
-        </header>
-
-        <div className="grid gap-8 lg:grid-cols-[1.3fr_0.7fr]">
-          <section className="rounded-3xl border border-[#dcc5ad] bg-white p-8 shadow-sm">
-            <h2 className="text-2xl font-black">Game Preferences</h2>
-            <p className="mt-1 text-sm text-[#6f5848]">
-              These settings will be used for local games and online matches.
-            </p>
-
-            <div className="mt-8 space-y-7">
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-[#855f42]">
-                  Player Name
-                </label>
-                <input
-                  value={settings.playerName}
-                  onChange={(event) =>
-                    updateSetting("playerName", event.target.value)
-                  }
-                  placeholder="Enter your name"
-                  className="w-full rounded-2xl border border-[#dcc5ad] bg-[#fffaf5] px-5 py-4 text-sm font-medium outline-none transition focus:border-[#855f42] focus:bg-white"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <label className="text-xs font-black uppercase tracking-widest text-[#855f42]">
-                  Player Side
-                </label>
-
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {["Random", "Light", "Dark"].map((side) => (
-                    <button
-                      key={side}
-                      type="button"
-                      onClick={() => updateSetting("playerSide", side)}
-                      className={
-                        settings.playerSide === side
-                          ? "rounded-2xl border border-[#855f42] bg-[#855f42] px-4 py-3 text-sm font-bold text-[#edd9c2]"
-                          : "rounded-2xl border border-[#dcc5ad] bg-[#fffaf5] px-4 py-3 text-sm font-bold text-[#2b1f18] transition hover:bg-[#edd9c2]"
-                      }
-                    >
-                      {side}
-                    </button>
-                  ))}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {TOGGLES.map(({ key, label, desc }) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => updateSetting(key, !settings[key])}
+              className="toggleButton"
+            >
+              <div className="flex flex-col justify-between ">
+                <div>
+                  <p className="label">{label}</p>
+                  <p className="cardSubtitle">{desc}</p>
                 </div>
+                <p className="label">
+                  {settings[key] ? "On" : "Off"}
+                </p>
               </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateSetting("showHints", !settings.showHints)
-                  }
-                  className="rounded-2xl border border-[#dcc5ad] bg-[#fffaf5] p-4 text-left transition hover:bg-[#edd9c2]"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-sm font-black">Show Move Hints</p>
-                      <p className="mt-1 text-xs text-[#6f5848]">
-                        Highlight possible moves.
-                      </p>
-                    </div>
-                    <p className="text-sm font-black">
-                      {settings.showHints ? "On" : "Off"}
-                    </p>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateSetting("soundEffects", !settings.soundEffects)
-                  }
-                  className="rounded-2xl border border-[#dcc5ad] bg-[#fffaf5] p-4 text-left transition hover:bg-[#edd9c2]"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-sm font-black">Sound Effects</p>
-                      <p className="mt-1 text-xs text-[#6f5848]">
-                        Play sounds during moves.
-                      </p>
-                    </div>
-                    <p className="text-sm font-black">
-                      {settings.soundEffects ? "On" : "Off"}
-                    </p>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateSetting("animations", !settings.animations)
-                  }
-                  className="rounded-2xl border border-[#dcc5ad] bg-[#fffaf5] p-4 text-left transition hover:bg-[#edd9c2]"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-sm font-black">Animations</p>
-                      <p className="mt-1 text-xs text-[#6f5848]">
-                        Use smooth checker movement.
-                      </p>
-                    </div>
-                    <p className="text-sm font-black">
-                      {settings.animations ? "On" : "Off"}
-                    </p>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateSetting(
-                      "onlineMatchmaking",
-                      !settings.onlineMatchmaking,
-                    )
-                  }
-                  className="rounded-2xl border border-[#dcc5ad] bg-[#fffaf5] p-4 text-left transition hover:bg-[#edd9c2]"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-sm font-black">Online Matchmaking</p>
-                      <p className="mt-1 text-xs text-[#6f5848]">
-                        Allow random online matches later.
-                      </p>
-                    </div>
-                    <p className="text-sm font-black">
-                      {settings.onlineMatchmaking ? "On" : "Off"}
-                    </p>
-                  </div>
-                </button>
-              </div>
-            </div>
-          </section>
+            </button>
+          ))}
         </div>
+      </section>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            onClick={saveSettings}
-            className="flex-1 rounded-2xl bg-[#855f42] px-6 py-4 font-black text-[#edd9c2] shadow-lg shadow-[#855f42]/20 transition hover:bg-[#6f4d34]"
-          >
-            Save Settings
-          </button>
-
-          <button
-            type="button"
-            onClick={resetSettings}
-            className="rounded-2xl border border-[#dcc5ad] bg-white px-6 py-4 font-black text-[#855f42] transition hover:bg-[#edd9c2]"
-          >
-            Reset
-          </button>
-        </div>
-
-        {saved && (
-          <p className="mt-4 text-center text-sm font-bold text-green-700">
-            Settings saved successfully.
-          </p>
-        )}
+      <div className="flex mt-6 gap-4">
+        <button
+          type="button"
+          onClick={saveSettings}
+          className="button"
+        >
+          Save Settings
+        </button>
+        <button
+          type="button"
+          onClick={resetSettings}
+          className="button"
+        >
+          Reset
+        </button>
       </div>
+
+      {saved && (
+        <p className="text-green-400 m-2 ">Settings saved successfully.</p>
+      )}
     </main>
   );
 }

@@ -1,0 +1,121 @@
+:root {
+  /* Colors */
+  --bg-primary: rgb(55, 40, 40);
+  --bg-hover-dark: rgb(110, 75, 50);
+  --bg-hover-light: #edd8c2;
+  --text-dark: #6f5848;
+  --text-light: #edd8c2;
+  --border-color: #dcc5ad;
+
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+
+  --transition-fast: 0.25s ease-in-out;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 900;
+  color: var(--text-light);
+}
+
+.subtitle {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-light);
+}
+
+.card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+}
+
+.cardTitle {
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.cardSubtitle {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-dark);
+}
+
+.label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: transparent;
+  box-sizing: border-box;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--border-color);
+  outline-offset: 2px;
+}
+
+.button,
+.toggleButton {
+  cursor: pointer;
+  box-sizing: border-box;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+.button {
+  background-color: var(--bg-primary);
+  color: var(--text-light);
+}
+
+.button {
+  font-weight: 700;
+  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  height: 45px;
+  border: none;
+}
+
+.button:hover,
+.button:focus-visible {
+  background: var(--bg-hover-dark);
+  outline: none;
+}
+
+.toggleButton {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: transparent;
+}
+
+.toggleButton {
+  padding: 1rem;
+  text-align: left;
+  width: 100%;
+}
+
+.toggleButton:hover,
+.toggleButton:focus-visible {
+  background: var(--bg-hover-light);
+  color: black;
+  outline: none;
+}
