@@ -1,9 +1,7 @@
 :root {
-  /* Colors */
   --bg-primary: rgb(55, 40, 40);
-  --bg-hover-dark: rgb(110, 75, 50);
-  --bg-hover-light: #edd8c2;
-  --text-dark: #6f5848;
+  --bg-hover: rgb(110, 75, 50);
+  --text-dark: rgb(140, 120, 70);
   --text-light: #edd8c2;
   --border-color: #dcc5ad;
 
@@ -72,8 +70,7 @@
   outline-offset: 2px;
 }
 
-.button,
-.toggleButton {
+.button {
   cursor: pointer;
   box-sizing: border-box;
   transition:
@@ -97,25 +94,6 @@
 
 .button:hover,
 .button:focus-visible {
-  background: var(--bg-hover-dark);
-  outline: none;
-}
-
-.toggleButton {
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  background: transparent;
-}
-
-.toggleButton {
-  padding: 1rem;
-  text-align: left;
-  width: 100%;
-}
-
-.toggleButton:hover,
-.toggleButton:focus-visible {
-  background: var(--bg-hover-light);
-  color: black;
+  background: var(--bg-hover);
   outline: none;
 }

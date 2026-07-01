@@ -90,9 +90,8 @@ export default function Settings() {
   return (
     <main className="m-4 sm:m-6 md:m-8 lg:m-10">
       <header className="flex justify-between">
-        <div>
+        <div className="mb-4">
           <h1 className="title">Settings</h1>
-          <p className="subtitle">Customize your checkers experience.</p>
         </div>
         <Link href="/" className="button">
           Back
@@ -137,16 +136,18 @@ export default function Settings() {
               key={key}
               type="button"
               onClick={() => updateSetting(key, !settings[key])}
-              className="toggleButton"
+              className={`rounded-2xl border p-4 text-left transition ${
+                settings[key]
+                  ? "border-[#dcc5ad] hover:bg-[#edd9c2] hover:text-black"
+                  : "border-[#855f42] bg-[#edd9c2] text-black"
+              }`}
             >
               <div className="flex flex-col justify-between ">
                 <div>
                   <p className="label">{label}</p>
                   <p className="cardSubtitle">{desc}</p>
                 </div>
-                <p className="label">
-                  {settings[key] ? "On" : "Off"}
-                </p>
+                <p className="label">{settings[key] ? "On" : "Off"}</p>
               </div>
             </button>
           ))}
@@ -154,18 +155,10 @@ export default function Settings() {
       </section>
 
       <div className="flex mt-6 gap-4">
-        <button
-          type="button"
-          onClick={saveSettings}
-          className="button"
-        >
+        <button type="button" onClick={saveSettings} className="button">
           Save Settings
         </button>
-        <button
-          type="button"
-          onClick={resetSettings}
-          className="button"
-        >
+        <button type="button" onClick={resetSettings} className="button">
           Reset
         </button>
       </div>
