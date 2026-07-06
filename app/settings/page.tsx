@@ -105,7 +105,7 @@ function ColorPicker({
           type="color"
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="h-12 w-14 cursor-pointer"
+          className="h-12 min-w-12 cursor-pointer"
         />
 
         <input
