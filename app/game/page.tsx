@@ -1,23 +1,10 @@
 "use client";
 
+import type { BoardState, PieceValue } from "@/types/board";
+import { useSettings } from "@/themes/context";
 import { useState } from "react";
 import "@/styles/square.css";
 import "@/styles/piece.css";
-
-type PieceValue = "dark" | "light" | null;
-type BoardState = PieceValue[][];
-
-type CheckerSettings = {
-  myPieceColor: string;
-  opponentPieceColor: string;
-  backgroundColor: string;
-};
-
-const DEFAULT_SETTINGS: CheckerSettings = {
-  myPieceColor: "#f7e7ce",
-  opponentPieceColor: "#4a2e1b",
-  backgroundColor: "#4c2424",
-};
 
 const DEFAULT_BOARD: BoardState = [
   [null, "dark", null, "dark", null, "dark", null, "dark"],
@@ -30,35 +17,16 @@ const DEFAULT_BOARD: BoardState = [
   ["light", null, "light", null, "light", null, "light", null],
 ];
 
-function loadSettings(): CheckerSettings {
-  if (typeof window === "undefined") {
-    return DEFAULT_SETTINGS;
-  }
-
-  try {
-    const savedSettings = localStorage.getItem("checkerSettings");
-
-    if (!savedSettings) {
-      return DEFAULT_SETTINGS;
-    }
-
-    return {
-      ...DEFAULT_SETTINGS,
-      ...JSON.parse(savedSettings),
-    };
-  } catch {
-    return DEFAULT_SETTINGS;
-  }
-}
-
-function renderPiece(pieceType: PieceValue, settings: CheckerSettings) {
+function renderPiece(
+  pieceType: PieceValue,
+  myPieceColor: string,
+  opponentPieceColor: string,
+) {
   if (pieceType === "dark") {
     return (
       <button
         className="darkPiece"
-        style={{
-          backgroundColor: settings.opponentPieceColor,
-        }}
+        style={{ backgroundColor: opponentPieceColor }}
       />
     );
   }
@@ -67,9 +35,7 @@ function renderPiece(pieceType: PieceValue, settings: CheckerSettings) {
     return (
       <button
         className="lightPiece"
-        style={{
-          backgroundColor: settings.myPieceColor,
-        }}
+        style={{ backgroundColor: myPieceColor }}
       />
     );
   }
@@ -77,7 +43,11 @@ function renderPiece(pieceType: PieceValue, settings: CheckerSettings) {
   return null;
 }
 
-function renderSquares(board: BoardState, settings: CheckerSettings) {
+function renderSquares(
+  board: BoardState,
+  myPieceColor: string,
+  opponentPieceColor: string,
+) {
   const squares = [];
 
   for (let row = 0; row < 8; row++) {
@@ -85,19 +55,11 @@ function renderSquares(board: BoardState, settings: CheckerSettings) {
       const key = `${row}-${col}`;
       const isDarkSquare = (row + col) % 2 !== 0;
 
-      if (isDarkSquare) {
-        squares.push(
-          <div key={key} className="darkSquare">
-            {renderPiece(board[row][col], settings)}
-          </div>,
-        );
-      } else {
-        squares.push(
-          <div key={key} className="lightSquare">
-            {renderPiece(board[row][col], settings)}
-          </div>,
-        );
-      }
+      squares.push(
+        <div key={key} className={isDarkSquare ? "darkSquare" : "lightSquare"}>
+          {renderPiece(board[row][col], myPieceColor, opponentPieceColor)}
+        </div>,
+      );
     }
   }
 
@@ -106,15 +68,12 @@ function renderSquares(board: BoardState, settings: CheckerSettings) {
 
 export default function Game() {
   const [board] = useState<BoardState>(DEFAULT_BOARD);
-  const [settings] = useState<CheckerSettings>(loadSettings);
+  const { settings } = useSettings();
 
   return (
-    <div
-      className="flex h-screen w-full items-center justify-center"
-      style={{ backgroundColor: settings.backgroundColor }}
-    >
+    <div className="flex h-screen w-full items-center justify-center">
       <div className="grid h-[480px] w-[480px] grid-cols-8 grid-rows-8 border-4 border-[#855f42] shadow-2xl">
-        {renderSquares(board, settings)}
+        {renderSquares(board, settings.myPieceColor, settings.opponentPieceColor)}
       </div>
     </div>
   );

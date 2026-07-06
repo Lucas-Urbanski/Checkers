@@ -1,8 +1,6 @@
+import type { BoardState, PieceValue } from "@/types/board";
 import "@/styles/square.css";
 import "@/styles/piece.css";
-
-export type PieceValue = "dark" | "light" | null;
-export type BoardState = PieceValue[][];
 
 function renderPiece(
   pieceType: PieceValue,
