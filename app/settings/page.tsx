@@ -19,7 +19,7 @@ const defaultSettings: CheckerSettings = {
   playerName: "",
   myPieceColor: "#f7e7ce",
   opponentPieceColor: "#4a2e1b",
-  backgroundColor: "#f5efe6",
+  backgroundColor: "#4c2424",
   showHints: true,
   soundEffects: true,
   animations: true,
@@ -93,36 +93,26 @@ export default function Settings() {
 
   return (
     <main
-      className="min-h-screen px-6 py-10 text-[#2b1f18]"
+      className="title min-h-screen px-6 py-10 "
       style={{ backgroundColor: settings.backgroundColor }}
     >
       <div className="mx-auto max-w-4xl">
         <header className="mb-10 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-black">Settings</h1>
-            <p className="mt-2 text-sm font-medium text-[#6f5848]">
-              Customize your player colors and game preferences.
-            </p>
-          </div>
+          <h1 className="text-4xl font-black">Settings</h1>
 
           <Link
             href="/"
-            className="rounded-xl bg-[#855f42] px-5 py-3 text-sm font-bold text-[#edd9c2] transition hover:bg-[#6f4d34]"
+            className="button"
           >
             Back
           </Link>
         </header>
 
-        <section className="rounded-3xl border border-[#dcc5ad] bg-white p-8 shadow-sm">
+        <section className="card rounded-3xl p-8 shadow-sm">
           <h2 className="text-2xl font-black">Player Preferences</h2>
-          <p className="mt-1 text-sm text-[#6f5848]">
-            Piece colors can be shown to other players later. Background color
-            is only for your own screen.
-          </p>
-
           <div className="mt-8 space-y-7">
             <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-[#855f42]">
+              <label className="label">
                 Player Name
               </label>
               <input
@@ -131,7 +121,7 @@ export default function Settings() {
                   updateSetting("playerName", event.target.value)
                 }
                 placeholder="Enter your name"
-                className="w-full rounded-2xl border border-[#dcc5ad] bg-[#fffaf5] px-5 py-4 text-sm font-medium outline-none transition focus:border-[#855f42] focus:bg-white"
+                className="input"
               />
             </div>
 
@@ -158,44 +148,7 @@ export default function Settings() {
               />
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <ToggleButton
-                title="Show Move Hints"
-                description="Highlight possible moves."
-                checked={settings.showHints}
-                onClick={() => updateSetting("showHints", !settings.showHints)}
-              />
-
-              <ToggleButton
-                title="Sound Effects"
-                description="Play sounds during moves."
-                checked={settings.soundEffects}
-                onClick={() =>
-                  updateSetting("soundEffects", !settings.soundEffects)
-                }
-              />
-
-              <ToggleButton
-                title="Animations"
-                description="Use smooth checker movement."
-                checked={settings.animations}
-                onClick={() =>
-                  updateSetting("animations", !settings.animations)
-                }
-              />
-
-              <ToggleButton
-                title="Online Matchmaking"
-                description="Allow random online matches later."
-                checked={settings.onlineMatchmaking}
-                onClick={() =>
-                  updateSetting(
-                    "onlineMatchmaking",
-                    !settings.onlineMatchmaking,
-                  )
-                }
-              />
-            </div>
+           
           </div>
         </section>
 
@@ -203,7 +156,7 @@ export default function Settings() {
           <button
             type="button"
             onClick={saveSettings}
-            className="flex-1 rounded-2xl bg-[#855f42] px-6 py-4 font-black text-[#edd9c2] shadow-lg shadow-[#855f42]/20 transition hover:bg-[#6f4d34]"
+            className="button w-1/2"
           >
             Save Settings
           </button>
@@ -211,22 +164,18 @@ export default function Settings() {
           <button
             type="button"
             onClick={resetSettings}
-            className="rounded-2xl border border-[#dcc5ad] bg-white px-6 py-4 font-black text-[#855f42] transition hover:bg-[#edd9c2]"
+            className="button w-1/2"
           >
             Reset
           </button>
         </div>
 
         {saved && (
-          <p className="mt-4 text-center text-sm font-bold text-green-700">
+          <p className="mt-4 text-center text-sm font-bold text-green-600">
             Settings saved successfully.
           </p>
         )}
       </div>
-
-      {saved && (
-        <p className="text-green-400 m-2 ">Settings saved successfully.</p>
-      )}
     </main>
   );
 }
@@ -243,7 +192,7 @@ function ColorPicker({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="rounded-2xl border border-[#dcc5ad] bg-[#fffaf5] p-4">
+    <div className="rounded-2xl border border-[#dcc5ad] bg-slate-100 p-4">
       <label className="text-xs font-black uppercase tracking-widest text-[#855f42]">
         {title}
       </label>

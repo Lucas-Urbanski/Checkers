@@ -11,7 +11,7 @@ const MENU_ITEMS = [
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center w-full h-full gap-8">
+    <div className="flex flex-col items-center w-full min-h-screen bg-[#4c2424] gap-8">
       <div className="flex flex-col m-12">
         <h1 className="text-6xl text-[#edd9c2] text-center font-bold mb-20">Checkers</h1>
 

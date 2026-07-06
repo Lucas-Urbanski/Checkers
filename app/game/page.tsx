@@ -16,7 +16,7 @@ type CheckerSettings = {
 const DEFAULT_SETTINGS: CheckerSettings = {
   myPieceColor: "#f7e7ce",
   opponentPieceColor: "#4a2e1b",
-  backgroundColor: "#f5efe6",
+  backgroundColor: "#4c2424",
 };
 
 const DEFAULT_BOARD: BoardState = [
