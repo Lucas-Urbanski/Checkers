@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Board, { PieceValue, BoardState } from "../components/board";
+import "@/styles/square.css";
+import "@/styles/piece.css";
 
-type Player = "light" | "dark";
+type PieceValue = "dark" | "light" | null;
+type BoardState = PieceValue[][];
 
 type CheckerSettings = {
   myPieceColor: string;
