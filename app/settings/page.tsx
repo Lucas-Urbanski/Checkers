@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import "@/styles/settings.css";
 
 type CheckerSettings = {
   playerName: string;
@@ -26,25 +27,46 @@ const defaultSettings: CheckerSettings = {
 };
 
 function loadSettings(): CheckerSettings {
-  if (typeof window === "undefined") {
-    return defaultSettings;
-  }
-
+  if (typeof window === "undefined") return defaultSettings;
   try {
-    const savedSettings = localStorage.getItem("checkerSettings");
-
-    if (!savedSettings) {
-      return defaultSettings;
-    }
-
-    return {
-      ...defaultSettings,
-      ...JSON.parse(savedSettings),
-    };
+    const saved = localStorage.getItem("checkerSettings");
+    return saved
+      ? { ...defaultSettings, ...JSON.parse(saved) }
+      : defaultSettings;
   } catch {
     return defaultSettings;
   }
 }
+
+const TOGGLES: {
+  key: keyof Pick<
+    CheckerSettings,
+    "showHints" | "soundEffects" | "animations" | "onlineMatchmaking"
+  >;
+  label: string;
+  desc: string;
+}[] = [
+  {
+    key: "showHints",
+    label: "Show Move Hints",
+    desc: "Highlight possible moves.",
+  },
+  {
+    key: "soundEffects",
+    label: "Sound Effects",
+    desc: "Play sounds during moves.",
+  },
+  {
+    key: "animations",
+    label: "Animations",
+    desc: "Use smooth checker movement.",
+  },
+  {
+    key: "onlineMatchmaking",
+    label: "Online Matchmaking",
+    desc: "Allow random online matches later.",
+  },
+];
 
 export default function Settings() {
   const [settings, setSettings] = useState<CheckerSettings>(loadSettings);
@@ -55,11 +77,7 @@ export default function Settings() {
     value: CheckerSettings[K],
   ) {
     setSaved(false);
-
-    setSettings((previousSettings) => ({
-      ...previousSettings,
-      [key]: value,
-    }));
+    setSettings((prev) => ({ ...prev, [key]: value }));
   }
 
   function saveSettings() {
@@ -205,6 +223,10 @@ export default function Settings() {
           </p>
         )}
       </div>
+
+      {saved && (
+        <p className="text-green-400 m-2 ">Settings saved successfully.</p>
+      )}
     </main>
   );
 }
