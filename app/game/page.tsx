@@ -38,12 +38,14 @@ export default function Game() {
       return;
     }
 
+    // logic for online multiplayer and bot games.
     // const targetPiece = board[row][col];
     // if (targetPiece === myPieceColor && turn === myPieceColor) {
     //   setSelected([row, col]);
     //   return;
     // }
 
+    // logic for local multiplayer games.
     const targetPiece = board[row][col];
     if (targetPiece === turn) {
       setSelected([row, col]);
