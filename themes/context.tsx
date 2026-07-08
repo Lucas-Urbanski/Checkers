@@ -22,16 +22,16 @@ type SettingsContextValue = {
 const SettingsContext = createContext<SettingsContextValue | null>(null);
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<CheckerSettings>(() => {
+  const [settings, setSettings] = useState<CheckerSettings>(DEFAULT_SETTINGS);
+
+  useEffect(() => {
     try {
       const saved = localStorage.getItem("checkerSettings");
-      return saved
-        ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) }
-        : DEFAULT_SETTINGS;
-    } catch {
-      return DEFAULT_SETTINGS;
-    }
-  });
+      if (saved) {
+        setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) });
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     document.body.style.backgroundColor = settings.backgroundColor;

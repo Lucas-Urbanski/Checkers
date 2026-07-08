@@ -1,80 +1,66 @@
 "use client";
 
-import type { BoardState, PieceValue } from "@/types/board";
+import { DEFAULT_BOARD, getValidMoves, applyMove } from "@/components/game";
+import type { BoardState } from "@/types/board";
 import { useSettings } from "@/themes/context";
+import Board from "@/components/board";
 import { useState } from "react";
 import "@/styles/square.css";
 import "@/styles/piece.css";
 
-const DEFAULT_BOARD: BoardState = [
-  [null, "dark", null, "dark", null, "dark", null, "dark"],
-  ["dark", null, "dark", null, "dark", null, "dark", null],
-  [null, "dark", null, "dark", null, "dark", null, "dark"],
-  [null, null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null, null],
-  ["light", null, "light", null, "light", null, "light", null],
-  [null, "light", null, "light", null, "light", null, "light"],
-  ["light", null, "light", null, "light", null, "light", null],
-];
-
-function renderPiece(
-  pieceType: PieceValue,
-  myPieceColor: string,
-  opponentPieceColor: string,
-) {
-  if (pieceType === "dark") {
-    return (
-      <button
-        className="darkPiece"
-        style={{ backgroundColor: opponentPieceColor }}
-      />
-    );
-  }
-
-  if (pieceType === "light") {
-    return (
-      <button
-        className="lightPiece"
-        style={{ backgroundColor: myPieceColor }}
-      />
-    );
-  }
-
-  return null;
-}
-
-function renderSquares(
-  board: BoardState,
-  myPieceColor: string,
-  opponentPieceColor: string,
-) {
-  const squares = [];
-
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 8; col++) {
-      const key = `${row}-${col}`;
-      const isDarkSquare = (row + col) % 2 !== 0;
-
-      squares.push(
-        <div key={key} className={isDarkSquare ? "darkSquare" : "lightSquare"}>
-          {renderPiece(board[row][col], myPieceColor, opponentPieceColor)}
-        </div>,
-      );
-    }
-  }
-
-  return squares;
-}
-
 export default function Game() {
-  const [board] = useState<BoardState>(DEFAULT_BOARD);
+  const [board, setBoard] = useState<BoardState>(DEFAULT_BOARD);
+  const [turn, setTurn] = useState<"light" | "dark">("light");
+  const [selected, setSelected] = useState<[number, number] | null>(null);
   const { settings } = useSettings();
+
+  const myPieceColor = settings.playerSide;
+  const validMoves = selected
+    ? getValidMoves(board, selected[0], selected[1])
+    : [];
+
+  function handleSquareClick(row: number, col: number) {
+    if (selected && selected[0] === row && selected[1] === col) {
+      setSelected(null);
+      return;
+    }
+
+    if (selected && validMoves.some(([r, c]) => r === row && c === col)) {
+      const { board: nextBoard, turn: nextTurn } = applyMove(
+        board,
+        turn,
+        selected,
+        [row, col],
+      );
+      setBoard(nextBoard);
+      setTurn(nextTurn);
+      setSelected(null);
+      return;
+    }
+
+    // const targetPiece = board[row][col];
+    // if (targetPiece === myPieceColor && turn === myPieceColor) {
+    //   setSelected([row, col]);
+    //   return;
+    // }
+
+    const targetPiece = board[row][col];
+    if (targetPiece === turn) {
+      setSelected([row, col]);
+      return;
+    }
+
+    setSelected(null);
+  }
 
   return (
     <div className="flex h-screen w-full items-center justify-center">
-      <div className="grid h-[480px] w-[480px] grid-cols-8 grid-rows-8 border-4 border-[#855f42] shadow-2xl">
-        {renderSquares(board, settings.myPieceColor, settings.opponentPieceColor)}
-      </div>
+      <Board
+        board={board}
+        selected={selected}
+        validMoves={validMoves}
+        onSquareClick={handleSquareClick}
+      />
     </div>
   );
 }
