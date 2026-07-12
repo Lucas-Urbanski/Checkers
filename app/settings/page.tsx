@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useSettings } from "@/themes/context";
 import { useState } from "react";
 import Board, {
   type BoardState,
@@ -81,7 +81,8 @@ function getColorDistance(firstColor: string, secondColor: string) {
 }
 
 export default function Settings() {
-  const [settings, setSettings] = useState<CheckerSettings>(loadSettings);
+  const { settings, updateSetting, saveSettings, resetSettings } =
+    useSettings();
   const [saved, setSaved] = useState(false);
 
   const hasInvalidColor =
@@ -252,7 +253,7 @@ export default function Settings() {
         </div>
 
         {saved && (
-          <p className="mt-4 text-center text-sm font-bold text-green-600">
+          <p className="text-center text-sm font-bold text-green-600 mt-4">
             Settings saved successfully.
           </p>
         )}
@@ -289,7 +290,7 @@ function ColorPicker({
         <input
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="min-w-0 flex-1 rounded-xl border border-[#dcc5ad] bg-white px-3 py-2 text-sm font-bold outline-none focus:border-[#855f42]"
+          className="input"
         />
       </div>
     </div>
