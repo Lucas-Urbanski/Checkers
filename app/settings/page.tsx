@@ -1,33 +1,15 @@
 "use client";
 
-import { useSettings } from "@/themes/context";
+import Link from "next/link";
 import { useState } from "react";
-import Board, {
-  type BoardState,
-  type BoardTheme,
-} from "@/app/components/board";
-import "@/styles/settings.css";
-
-type CheckerSettings = {
-  playerName: string;
-  myPieceColor: string;
-  opponentPieceColor: string;
-  lightTileColor: string;
-  darkTileColor: string;
-  backgroundColor: string;
-};
+import Board, { type BoardTheme } from "@/components/board";
+import type { BoardState } from "@/types/board";
+import { DEFAULT_SETTINGS, type CheckerSettings } from "@/types/settings";
+import { useSettings } from "@/themes/context";
+import "@/styles/style.css";
 
 const PAGE_BACKGROUND = "#4c2424";
 const MIN_COLOR_DISTANCE = 95;
-
-const defaultSettings: CheckerSettings = {
-  playerName: "",
-  myPieceColor: "#f7e7ce",
-  opponentPieceColor: "#4a2e1b",
-  lightTileColor: "#f0d9b5",
-  darkTileColor: "#b58863",
-  backgroundColor: PAGE_BACKGROUND,
-};
 
 const PREVIEW_BOARD: BoardState = [
   [null, "dark", null, "dark", null, "dark", null, "dark"],
@@ -39,19 +21,6 @@ const PREVIEW_BOARD: BoardState = [
   [null, "light", null, "light", null, "light", null, "light"],
   ["light", null, "light", null, "light", null, "light", null],
 ];
-
-function loadSettings(): CheckerSettings {
-  if (typeof window === "undefined") return defaultSettings;
-
-  try {
-    const saved = localStorage.getItem("checkerSettings");
-    return saved
-      ? { ...defaultSettings, ...JSON.parse(saved) }
-      : defaultSettings;
-  } catch {
-    return defaultSettings;
-  }
-}
 
 function isHexColor(color: string) {
   return /^#[0-9a-fA-F]{6}$/.test(color);
@@ -81,8 +50,13 @@ function getColorDistance(firstColor: string, secondColor: string) {
 }
 
 export default function Settings() {
-  const { settings, updateSetting, saveSettings, resetSettings } =
-    useSettings();
+  const {
+    settings,
+    updateSetting,
+    saveSettings: saveStoredSettings,
+    resetSettings: resetStoredSettings,
+  } = useSettings();
+
   const [saved, setSaved] = useState(false);
 
   const hasInvalidColor =
@@ -109,32 +83,26 @@ export default function Settings() {
     darkTileColor: settings.darkTileColor,
   };
 
-  function updateSetting<K extends keyof CheckerSettings>(
+  function handleUpdateSetting<K extends keyof CheckerSettings>(
     key: K,
     value: CheckerSettings[K],
   ) {
     setSaved(false);
-    setSettings((prev) => ({ ...prev, [key]: value }));
+    updateSetting(key, value);
   }
 
-  function saveSettings() {
+  function handleSaveSettings() {
     if (hasColorError) {
       setSaved(false);
       return;
     }
 
-    localStorage.setItem("checkerSettings", JSON.stringify(settings));
+    saveStoredSettings();
     setSaved(true);
   }
 
-  function resetSettings() {
-    const resetSettingsValues: CheckerSettings = {
-      ...defaultSettings,
-      playerName: settings.playerName,
-    };
-
-    setSettings(resetSettingsValues);
-    localStorage.setItem("checkerSettings", JSON.stringify(resetSettingsValues));
+  function handleResetSettings() {
+    resetStoredSettings();
     setSaved(true);
   }
 
@@ -161,7 +129,7 @@ export default function Settings() {
               <input
                 value={settings.playerName}
                 onChange={(event) =>
-                  updateSetting("playerName", event.target.value)
+                  handleUpdateSetting("playerName", event.target.value)
                 }
                 placeholder="Enter your name"
                 className="input"
@@ -179,31 +147,37 @@ export default function Settings() {
                     <ColorPicker
                       title="Your Pieces"
                       value={settings.myPieceColor}
-                      fallbackValue={defaultSettings.myPieceColor}
-                      onChange={(value) => updateSetting("myPieceColor", value)}
+                      fallbackValue={DEFAULT_SETTINGS.myPieceColor}
+                      onChange={(value) =>
+                        handleUpdateSetting("myPieceColor", value)
+                      }
                     />
 
                     <ColorPicker
                       title="Opponent Pieces"
                       value={settings.opponentPieceColor}
-                      fallbackValue={defaultSettings.opponentPieceColor}
+                      fallbackValue={DEFAULT_SETTINGS.opponentPieceColor}
                       onChange={(value) =>
-                        updateSetting("opponentPieceColor", value)
+                        handleUpdateSetting("opponentPieceColor", value)
                       }
                     />
 
                     <ColorPicker
                       title="Tile Color 1"
                       value={settings.lightTileColor}
-                      fallbackValue={defaultSettings.lightTileColor}
-                      onChange={(value) => updateSetting("lightTileColor", value)}
+                      fallbackValue={DEFAULT_SETTINGS.lightTileColor}
+                      onChange={(value) =>
+                        handleUpdateSetting("lightTileColor", value)
+                      }
                     />
 
                     <ColorPicker
                       title="Tile Color 2"
                       value={settings.darkTileColor}
-                      fallbackValue={defaultSettings.darkTileColor}
-                      onChange={(value) => updateSetting("darkTileColor", value)}
+                      fallbackValue={DEFAULT_SETTINGS.darkTileColor}
+                      onChange={(value) =>
+                        handleUpdateSetting("darkTileColor", value)
+                      }
                     />
                   </div>
                 </div>
@@ -223,7 +197,7 @@ export default function Settings() {
 
             {hasColorError && (
               <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-sm font-bold text-red-800">
-                {hasInvalidColor}
+                {hasInvalidColor && <p>Use valid hex colors, like #f0d9b5.</p>}
                 {pieceColorsAreTooSimilar && (
                   <p>Your two piece colors are too similar.</p>
                 )}
@@ -238,7 +212,7 @@ export default function Settings() {
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <button
             type="button"
-            onClick={saveSettings}
+            onClick={handleSaveSettings}
             disabled={hasColorError}
             className={`button w-1/2 ${
               hasColorError ? "cursor-not-allowed opacity-50" : ""
@@ -247,13 +221,17 @@ export default function Settings() {
             Save Settings
           </button>
 
-          <button type="button" onClick={resetSettings} className="button w-1/2">
+          <button
+            type="button"
+            onClick={handleResetSettings}
+            className="button w-1/2"
+          >
             Reset
           </button>
         </div>
 
         {saved && (
-          <p className="text-center text-sm font-bold text-green-600 mt-4">
+          <p className="mt-4 text-center text-sm font-bold text-green-600">
             Settings saved successfully.
           </p>
         )}

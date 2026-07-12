@@ -5,9 +5,9 @@ import {
   useContext,
   useEffect,
   useState,
-  ReactNode,
+  type ReactNode,
 } from "react";
-import { CheckerSettings, DEFAULT_SETTINGS } from "@/types/settings";
+import { type CheckerSettings, DEFAULT_SETTINGS } from "@/types/settings";
 
 type SettingsContextValue = {
   settings: CheckerSettings;
@@ -21,17 +21,29 @@ type SettingsContextValue = {
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
 
-export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<CheckerSettings>(DEFAULT_SETTINGS);
+function loadSettings(): CheckerSettings {
+  if (typeof window === "undefined") {
+    return DEFAULT_SETTINGS;
+  }
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("checkerSettings");
-      if (saved) {
-        setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) });
-      }
-    } catch {}
-  }, []);
+  try {
+    const saved = localStorage.getItem("checkerSettings");
+
+    if (!saved) {
+      return DEFAULT_SETTINGS;
+    }
+
+    return {
+      ...DEFAULT_SETTINGS,
+      ...JSON.parse(saved),
+    };
+  } catch {
+    return DEFAULT_SETTINGS;
+  }
+}
+
+export function SettingsProvider({ children }: { children: ReactNode }) {
+  const [settings, setSettings] = useState<CheckerSettings>(loadSettings);
 
   useEffect(() => {
     document.body.style.backgroundColor = settings.backgroundColor;
@@ -49,8 +61,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   }
 
   function resetSettings() {
-    setSettings(DEFAULT_SETTINGS);
-    localStorage.setItem("checkerSettings", JSON.stringify(DEFAULT_SETTINGS));
+    const resetSettingsValues: CheckerSettings = {
+      ...DEFAULT_SETTINGS,
+      playerName: settings.playerName,
+    };
+
+    setSettings(resetSettingsValues);
+    localStorage.setItem("checkerSettings", JSON.stringify(resetSettingsValues));
   }
 
   return (
@@ -64,6 +81,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
 export function useSettings() {
   const ctx = useContext(SettingsContext);
-  if (!ctx) throw new Error("useSettings must be used within SettingsProvider");
+
+  if (!ctx) {
+    throw new Error("useSettings must be used within SettingsProvider");
+  }
+
   return ctx;
 }
