@@ -10,6 +10,7 @@ export default function Game() {
   const [board, setBoard] = useState<BoardState>(DEFAULT_BOARD);
   const [turn, setTurn] = useState<Exclude<PieceValue, null>>("light");
   const [selected, setSelected] = useState<[number, number] | null>(null);
+  
   const { settings } = useSettings();
 
   const validMoves = selected
@@ -47,16 +48,19 @@ export default function Game() {
   }
 
   return (
-    <div
-      className="flex h-screen w-full items-center justify-center"
-      style={{ backgroundColor: settings.backgroundColor }}
-    >
+    <div className="flex h-screen w-full items-center justify-center">
       <Board
         board={board}
         selected={selected}
         validMoves={validMoves}
         onSquareClick={handleSquareClick}
         sizeClassName="h-[480px] w-[480px]"
+        theme={{
+          myPieceColor: settings.myPieceColor,
+          opponentPieceColor: settings.opponentPieceColor,
+          lightTileColor: settings.lightTileColor,
+          darkTileColor: settings.darkTileColor,
+        }}
       />
     </div>
   );

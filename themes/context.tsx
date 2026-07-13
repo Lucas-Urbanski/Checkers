@@ -21,33 +21,26 @@ type SettingsContextValue = {
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
 
-function loadSettings(): CheckerSettings {
-  if (typeof window === "undefined") {
-    return DEFAULT_SETTINGS;
-  }
-
-  try {
-    const saved = localStorage.getItem("checkerSettings");
-
-    if (!saved) {
-      return DEFAULT_SETTINGS;
-    }
-
-    return {
-      ...DEFAULT_SETTINGS,
-      ...JSON.parse(saved),
-    };
-  } catch {
-    return DEFAULT_SETTINGS;
-  }
-}
-
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<CheckerSettings>(loadSettings);
+  const [settings, setSettings] = useState<CheckerSettings>(DEFAULT_SETTINGS);
 
   useEffect(() => {
-    document.body.style.backgroundColor = settings.backgroundColor;
-  }, [settings.backgroundColor]);
+    try {
+      const saved = localStorage.getItem("checkerSettings");
+      if (saved) {
+        setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) });
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    const isCyberpunk = settings.theme === "cyberpunk";
+    const defaultBg = settings.backgroundColor || "#4c2424";
+
+    document.body.style.backgroundColor = isCyberpunk ? "#001f2d" : defaultBg;
+    
+    document.body.style.transition = "background-color 0.5s ease";
+  }, [settings.theme, settings.backgroundColor]);
 
   function updateSetting<K extends keyof CheckerSettings>(
     key: K,
@@ -67,7 +60,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     };
 
     setSettings(resetSettingsValues);
-    localStorage.setItem("checkerSettings", JSON.stringify(resetSettingsValues));
+    localStorage.setItem(
+      "checkerSettings",
+      JSON.stringify(resetSettingsValues),
+    );
   }
 
   return (

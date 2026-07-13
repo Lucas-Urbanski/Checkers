@@ -3,8 +3,9 @@
 import type { BoardState, PieceValue } from "@/types/board";
 import { useSettings } from "@/themes/context";
 import type { CheckerSettings } from "@/types/settings";
-import "@/styles/square.css";
-import "@/styles/piece.css";
+
+import defaultStyles from "@/styles/default.module.css";
+import cyberpunkStyles from "@/styles/cyberpunk.module.css";
 
 export type BoardTheme = Pick<
   CheckerSettings,
@@ -20,37 +21,30 @@ function renderPiece(
   row: number,
   col: number,
   theme: BoardTheme,
+  styles: Record<string, string>,
+  isCyberpunk: boolean,
   onSquareClick: (row: number, col: number) => void,
 ) {
-  if (pieceType === "dark") {
-    return (
-      <button
-        type="button"
-        className="darkPiece"
-        style={{ background: pieceBackground(theme.opponentPieceColor) }}
-        onClick={(event) => {
-          event.stopPropagation();
-          onSquareClick(row, col);
-        }}
-      />
-    );
-  }
+  if (!pieceType) return null;
 
-  if (pieceType === "light") {
-    return (
-      <button
-        type="button"
-        className="lightPiece"
-        style={{ background: pieceBackground(theme.myPieceColor) }}
-        onClick={(event) => {
-          event.stopPropagation();
-          onSquareClick(row, col);
-        }}
-      />
-    );
-  }
+  const isDark = pieceType === "dark";
+  const pieceClass = isDark ? styles.darkPiece : styles.lightPiece;
 
-  return null;
+  const pieceStyle = isCyberpunk
+    ? {}
+    : { background: pieceBackground(isDark ? theme.opponentPieceColor : theme.myPieceColor) };
+
+  return (
+    <button
+      type="button"
+      className={pieceClass}
+      style={pieceStyle}
+      onClick={(event) => {
+        event.stopPropagation();
+        onSquareClick(row, col);
+      }}
+    />
+  );
 }
 
 function renderSquares(
@@ -58,6 +52,8 @@ function renderSquares(
   selected: [number, number] | null,
   validMoves: [number, number][],
   theme: BoardTheme,
+  styles: Record<string, string>,
+  isCyberpunk: boolean,
   onSquareClick: (row: number, col: number) => void,
 ) {
   const squares = [];
@@ -69,20 +65,24 @@ function renderSquares(
       const isSelected = selected?.[0] === row && selected?.[1] === col;
       const isValidMove = validMoves.some(([r, c]) => r === row && c === col);
 
+      const squareClasses = [
+        isDarkSquare ? styles.darkSquare : styles.lightSquare,
+        isSelected ? styles.selected : "",
+        isValidMove ? styles.validMove : ""
+      ].filter(Boolean).join(" ");
+
+      const squareStyle = isCyberpunk
+        ? {}
+        : { background: isDarkSquare ? theme.darkTileColor : theme.lightTileColor };
+
       squares.push(
         <div
           key={key}
-          className={`${isDarkSquare ? "darkSquare" : "lightSquare"}${
-            isSelected ? " selected" : ""
-          }${isValidMove ? " validMove" : ""}`}
-          style={{
-            background: isDarkSquare
-              ? theme.darkTileColor
-              : theme.lightTileColor,
-          }}
+          className={squareClasses}
+          style={squareStyle}
           onClick={() => onSquareClick(row, col)}
         >
-          {renderPiece(board[row][col], row, col, theme, onSquareClick)}
+          {renderPiece(board[row][col], row, col, theme, styles, isCyberpunk, onSquareClick)}
         </div>,
       );
     }
@@ -108,6 +108,9 @@ export default function Board({
 }) {
   const { settings } = useSettings();
 
+  const isCyberpunk = settings.theme === "cyberpunk";
+  const styles = isCyberpunk ? cyberpunkStyles : defaultStyles;
+
   const currentTheme: BoardTheme = theme ?? {
     myPieceColor: settings.myPieceColor,
     opponentPieceColor: settings.opponentPieceColor,
@@ -115,11 +118,13 @@ export default function Board({
     darkTileColor: settings.darkTileColor,
   };
 
+  const boardContainerClass = isCyberpunk
+    ? `grid grid-cols-8 grid-rows-8 border-2 border-[#00f2fe] shadow-[0_0_20px_rgba(0,242,254,0.3)] bg-[#010003] ${sizeClassName}`
+    : `grid grid-cols-8 grid-rows-8 border-4 border-[#855f42] shadow-2xl ${sizeClassName}`;
+
   return (
-    <div
-      className={`grid grid-cols-8 grid-rows-8 border-4 border-[#855f42] shadow-2xl ${sizeClassName}`}
-    >
-      {renderSquares(board, selected, validMoves, currentTheme, onSquareClick)}
+    <div className={boardContainerClass}>
+      {renderSquares(board, selected, validMoves, currentTheme, styles, isCyberpunk, onSquareClick)}
     </div>
   );
 }

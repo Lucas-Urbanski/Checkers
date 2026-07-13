@@ -215,3 +215,124 @@
     inset 0 5px 10px rgba(0, 0, 0, 0.4),
     0 2px 4px rgba(0, 0, 0, 0.5);
 }
+
+.lightSquare,
+.darkSquare {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: visible;
+
+    transition:
+    transform 0.15s ease,
+    filter 0.2s ease;
+
+    box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.25);
+}
+
+.lightSquare::before,
+.darkSquare::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.lightSquare {
+    background:
+    repeating-linear-gradient(
+        87deg,
+        rgba(255, 255, 255, 0.05) 0px,
+        rgba(255, 255, 255, 0.05) 2px,
+        rgba(0, 0, 0, 0.025) 3px,
+        rgba(255, 255, 255, 0.03) 6px
+    ),
+    linear-gradient(135deg, #f6e6bf 0%, #ecd3a2 35%, #e2c38c 70%, #d6b177 100%);
+}
+
+.darkSquare {
+    background:
+    repeating-linear-gradient(
+        92deg,
+        rgba(255, 255, 255, 0.03) 0px,
+        rgba(255, 255, 255, 0.03) 2px,
+        rgba(0, 0, 0, 0.08) 4px,
+        rgba(255, 255, 255, 0.015) 7px
+    ),
+    linear-gradient(135deg, #765031 0%, #5b381d 40%, #472611 70%, #2f1608 100%);
+}
+
+.lightSquare::before,
+.darkSquare::before {
+    background:
+    radial-gradient(
+        circle at 25% 20%,
+        rgba(255, 255, 255, 0.18),
+        transparent 45%
+    ),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.18));
+}
+
+.lightSquare:hover,
+.darkSquare:hover {
+    filter: brightness(1.08);
+    z-index: 5;
+}
+
+.lightSquare.selected::after,
+.darkSquare.selected::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 3px solid rgba(255, 215, 120, 0.95);
+    box-shadow:
+    inset 0 0 18px rgba(255, 225, 120, 0.35),
+    0 0 18px rgba(255, 215, 120, 0.4);
+}
+
+.lightSquare.validMove::after,
+.darkSquare.validMove::after {
+  content: "";
+  position: absolute;
+  width: 26%;
+  height: 26%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #ffffff 0%,
+    #00ff40 35%,
+    #2bff00 75%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 10px lightgreen,
+    0 0 20px rgba(30, 255, 0, 0.6);
+  animation: movePulse 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.lightSquare.captureMove::after,
+.darkSquare.captureMove::after {
+    content: "";
+    position: absolute;
+    inset: 7%;
+    border-radius: 50%;
+    border: 5px solid rgba(220, 65, 65, 0.85);
+    box-shadow: 0 0 16px rgba(220, 65, 65, 0.45);
+    animation: movePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes movePulse {
+  0%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.80;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}

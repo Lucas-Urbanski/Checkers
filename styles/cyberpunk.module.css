@@ -1,0 +1,392 @@
+.darkPiece,
+.lightPiece,
+.moveablePiece {
+  position: relative;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  cursor: grab;
+  overflow: hidden;
+
+  will-change: transform, filter, box-shadow;
+
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    filter 0.35s ease;
+}
+
+.darkPiece::before,
+.lightPiece::before,
+.moveablePiece::before {
+  content: "";
+  position: absolute;
+  inset: 16%;
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.darkPiece::after,
+.lightPiece::after,
+.moveablePiece::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.08) 0px,
+    rgba(255, 255, 255, 0.08) 2px,
+    transparent 2px,
+    transparent 6px
+  );
+  mix-blend-mode: screen;
+  opacity: 0.35;
+  animation: scan 3s linear infinite;
+  pointer-events: none;
+}
+
+.darkPiece {
+  background: radial-gradient(
+    circle at 30% 25%,
+    #4ef5ff 0%,
+    #00d0ff 22%,
+    #0b2344 60%,
+    #03040d 100%
+  );
+
+  border: 2px solid #4ef5ff;
+
+  box-shadow:
+    inset 0 0 18px rgba(0, 255, 255, 0.45),
+    inset 0 -10px 20px rgba(0, 0, 0, 0.75),
+    0 0 12px rgba(0, 255, 255, 0.7),
+    0 0 35px rgba(0, 170, 255, 0.45),
+    0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.darkPiece::before {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(0, 255, 255, 0.75) 18%,
+    rgba(0, 255, 255, 0.18) 45%,
+    transparent 72%
+  );
+  box-shadow:
+    0 0 25px cyan,
+    inset 0 0 8px white;
+}
+
+.lightPiece {
+  background: radial-gradient(
+    circle at 30% 25%,
+    #ff9df9 0%,
+    #ff46d2 25%,
+    #5f1d75 62%,
+    #16051d 100%
+  );
+
+  border: 2px solid #ff4fd8;
+
+  box-shadow:
+    inset 0 0 18px rgba(255, 80, 220, 0.5),
+    inset 0 -10px 20px rgba(0, 0, 0, 0.7),
+    0 0 15px rgba(255, 60, 220, 0.75),
+    0 0 40px rgba(255, 0, 180, 0.45),
+    0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.lightPiece::before {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 100, 255, 0.8) 20%,
+    rgba(255, 0, 180, 0.2) 50%,
+    transparent 72%
+  );
+  box-shadow:
+    0 0 25px #ff00cc,
+    inset 0 0 8px white;
+}
+
+.moveablePiece {
+  width: 80%;
+  height: 80%;
+
+  background: radial-gradient(
+    circle,
+    #ffffff,
+    #ffe56d 18%,
+    #ffb300 45%,
+    #ff6a00 75%,
+    #4a1400
+  );
+
+  border: 2px solid #ffd84d;
+
+  box-shadow:
+    inset 0 0 16px rgba(255, 255, 255, 0.8),
+    0 0 15px gold,
+    0 0 35px orange,
+    0 0 60px rgba(255, 170, 0, 0.45);
+}
+
+.moveablePiece::before {
+  background: radial-gradient(
+    circle,
+    white,
+    rgba(255, 255, 160, 0.85),
+    transparent 70%
+  );
+  box-shadow: 0 0 18px gold;
+}
+
+.darkPiece:hover,
+.lightPiece:hover,
+.moveablePiece:hover {
+  transform: translateY(-10px) scale(1.08);
+
+  filter: brightness(1.25) saturate(1.35);
+}
+
+.darkPiece:hover {
+  box-shadow:
+    inset 0 0 25px cyan,
+    0 5px 18px cyan,
+    0 10px 45px cyan,
+    0 15px 80px rgba(0, 255, 255, 0.5);
+}
+
+.lightPiece:hover {
+  box-shadow:
+    inset 0 0 25px #ff57f2,
+    0 5px 18px #ff57f2,
+    0 10px 45px #ff00c8,
+    0 15px 80px rgba(255, 0, 200, 0.5);
+}
+
+.moveablePiece:hover {
+  box-shadow:
+    inset 0 0 20px white,
+    0 5px 20px gold,
+    0 10px 45px orange,
+    0 15px 70px rgba(255, 180, 0, 0.55);
+}
+
+.darkPiece:active,
+.lightPiece:active,
+.moveablePiece:active {
+  cursor: grabbing;
+  transform: scale(0.95) translateY(2px);
+  transition: 0.08s;
+}
+
+@keyframes scan {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(6px);
+  }
+}
+
+.lightSquare,
+.darkSquare {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+
+  transition:
+    transform 0.18s ease,
+    filter 0.25s ease,
+    box-shadow 0.25s ease;
+
+  border: 1px solid rgba(255, 255, 255, 0.08); /* Slightly brighter border */
+
+  isolation: isolate;
+}
+
+.lightSquare::before,
+.darkSquare::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(
+      115deg,
+      transparent 42%,
+      rgba(255, 255, 255, 0.12) 50%,
+      transparent 58%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 11px,
+      rgba(255, 255, 255, 0.05) 12px,
+      transparent 13px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 11px,
+      rgba(255, 255, 255, 0.05) 12px,
+      transparent 13px
+    );
+  background-size:
+    300% 300%,
+    100% 100%,
+    100% 100%;
+  background-position:
+    -100% -100%,
+    0 0,
+    0 0;
+  background-repeat: no-repeat, repeat, repeat;
+  opacity: 0.65;
+  animation: circuitSweep 9s linear infinite;
+}
+
+.lightSquare {
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      rgba(0, 255, 255, 0.25),
+      transparent 50%
+    ),
+    linear-gradient(135deg, #1b6691 0%, #0d3d5e 45%, #061f33 100%);
+
+  box-shadow:
+    inset 0 0 22px rgba(0, 255, 255, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 0 4px rgba(0, 255, 255, 0.2);
+}
+
+.darkSquare {
+  background:
+    radial-gradient(
+      circle at 70% 70%,
+      rgba(255, 0, 170, 0.25),
+      transparent 50%
+    ),
+    linear-gradient(135deg, #380047 0%, #220030 55%, #0e0014 100%);
+
+  box-shadow:
+    inset 0 0 22px rgba(255, 0, 170, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 0 4px rgba(255, 0, 170, 0.2);
+}
+
+.lightSquare:hover {
+  z-index: 5;
+  filter: brightness(1.25) saturate(1.3);
+  box-shadow:
+    inset 0 0 30px rgba(0, 255, 255, 0.45),
+    0 0 12px rgba(0, 255, 255, 0.6),
+    0 0 30px rgba(0, 255, 255, 0.3);
+}
+
+.darkSquare:hover {
+  z-index: 5;
+  filter: brightness(1.25) saturate(1.3);
+  box-shadow:
+    inset 0 0 30px rgba(255, 0, 170, 0.4),
+    0 0 12px rgba(255, 0, 170, 0.55),
+    0 0 30px rgba(255, 0, 170, 0.3);
+}
+
+.lightSquare.selected::after,
+.darkSquare.selected::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 4px;
+  padding: 2px;
+  background: conic-gradient(cyan, #00bfff, magenta, #ff00aa, cyan);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rotateRing 4s linear infinite;
+  box-shadow:
+    0 0 10px cyan,
+    0 0 20px magenta;
+  pointer-events: none;
+  clip-path: none;
+}
+
+.lightSquare.validMove::after,
+.darkSquare.validMove::after {
+  content: "";
+  position: absolute;
+  width: 26%;
+  height: 26%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #ffffff 0%,
+    #00f0ff 35%,
+    #0090ff 75%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 10px cyan,
+    0 0 20px rgba(0, 200, 255, 0.6);
+  animation: movePulse 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.lightSquare.captureMove::after,
+.darkSquare.captureMove::after {
+  content: "";
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  border: 3px solid #ff2b6d;
+  box-shadow:
+    inset 0 0 12px rgba(255, 43, 109, 0.5),
+    0 0 16px rgba(255, 43, 109, 0.6);
+  animation: movePulse 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes circuitSweep {
+  from {
+    background-position:
+      -100% -100%,
+      0 0,
+      0 0;
+  }
+  to {
+    background-position:
+      200% 200%,
+      0 13px,
+      0 13px;
+  }
+}
+
+@keyframes rotateRing {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes movePulse {
+  0%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.80;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}

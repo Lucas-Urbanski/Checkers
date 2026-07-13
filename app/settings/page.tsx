@@ -3,24 +3,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import Board, { type BoardTheme } from "@/components/board";
-import type { BoardState } from "@/types/board";
+import { DEFAULT_BOARD } from "@/components/game";
 import { DEFAULT_SETTINGS, type CheckerSettings } from "@/types/settings";
 import { useSettings } from "@/themes/context";
 import "@/styles/style.css";
 
-const PAGE_BACKGROUND = "#4c2424";
 const MIN_COLOR_DISTANCE = 95;
-
-const PREVIEW_BOARD: BoardState = [
-  [null, "dark", null, "dark", null, "dark", null, "dark"],
-  ["dark", null, "dark", null, "dark", null, "dark", null],
-  [null, "dark", null, "dark", null, "dark", null, "dark"],
-  [null, null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null, null],
-  ["light", null, "light", null, "light", null, "light", null],
-  [null, "light", null, "light", null, "light", null, "light"],
-  ["light", null, "light", null, "light", null, "light", null],
-];
 
 function isHexColor(color: string) {
   return /^#[0-9a-fA-F]{6}$/.test(color);
@@ -59,6 +47,8 @@ export default function Settings() {
 
   const [saved, setSaved] = useState(false);
 
+  const isCyberpunk = settings.theme === "cyberpunk";
+
   const hasInvalidColor =
     !isHexColor(settings.myPieceColor) ||
     !isHexColor(settings.opponentPieceColor) ||
@@ -74,7 +64,8 @@ export default function Settings() {
     MIN_COLOR_DISTANCE;
 
   const hasColorError =
-    hasInvalidColor || pieceColorsAreTooSimilar || tileColorsAreTooSimilar;
+    !isCyberpunk &&
+    (hasInvalidColor || pieceColorsAreTooSimilar || tileColorsAreTooSimilar);
 
   const boardTheme: BoardTheme = {
     myPieceColor: settings.myPieceColor,
@@ -107,21 +98,22 @@ export default function Settings() {
   }
 
   return (
-    <main
-      className="title min-h-screen px-6 py-10"
-      style={{ backgroundColor: settings.backgroundColor || PAGE_BACKGROUND }}
-    >
+    <main className="title min-h-screen px-6 py-10 transition-colors duration-500">
       <div className="mx-auto max-w-5xl">
         <header className="mb-10 flex items-center justify-between">
-          <h1 className="text-4xl font-black">Settings</h1>
+          <h1
+            className={`text-4xl font-black ${isCyberpunk ? "text-[#00f2fe]" : "title"}`}
+          >
+            Settings
+          </h1>
 
           <Link href="/" className="button">
             Back
           </Link>
         </header>
 
-        <section className="card rounded-3xl p-8 shadow-sm">
-          <h2 className="text-2xl font-black">Player Preferences</h2>
+        <section className="card rounded-3xl p-8 shadow-sm bg-white">
+          <h2 className="title">Player Preferences</h2>
 
           <div className="mt-8 space-y-7">
             <div className="space-y-2">
@@ -132,59 +124,99 @@ export default function Settings() {
                   handleUpdateSetting("playerName", event.target.value)
                 }
                 placeholder="Enter your name"
-                className="input"
+                className="input w-full rounded-xl border border-gray-300 p-3"
               />
             </div>
 
-            <section className="rounded-3xl border border-[#dcc5ad] bg-slate-100 p-5 text-[#2b1f18]">
-              <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div className="space-y-3">
+              <label className="label">Themes</label>
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => handleUpdateSetting("theme", "default")}
+                  className={`flex-1 rounded-xl border-2 p-4 font-bold transition-all ${
+                    !isCyberpunk
+                      ? "border-[#855f42] bg-[#fdfaf7] text-[#855f42]"
+                      : "border-gray-200 bg-gray-50 text-gray-400 hover:border-gray-300"
+                  }`}
+                >
+                  Classic Wood
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleUpdateSetting("theme", "cyberpunk")}
+                  className={`flex-1 rounded-xl border-2 p-4 font-bold transition-all ${
+                    isCyberpunk
+                      ? "border-[#00f2fe] bg-[#001f2d] text-[#00f2fe] shadow-[0_0_15px_rgba(0,242,254,0.3)]"
+                      : "border-gray-200 bg-gray-50 text-gray-400 hover:border-gray-300"
+                  }`}
+                >
+                  Cyberpunk
+                </button>
+              </div>
+            </div>
+
+            <section
+              className={`rounded-3xl border border-[#dcc5ad]  ${isCyberpunk ? "bg-[#001f2d]" : "bg-slate-100"} p-5 text-[#2b1f18]`}
+            >
+              <div
+                className={
+                  !isCyberpunk
+                    ? "grid lg:grid-cols-[0.8fr_1.2fr] lg:items-center"
+                    : ""
+                }
+              >
                 <div>
-                  <h3 className="text-sm font-black uppercase tracking-widest text-[#855f42]">
-                    Board Colors
-                  </h3>
+                  {!isCyberpunk && (
+                    <div className="mb-4 space-y-4">
+                      {" "}
+                      <h3 className="text-sm font-black uppercase tracking-widest text-[#855f42]">
+                        Board Colors
+                      </h3>
+                      <>
+                        <ColorPicker
+                          title="Your Pieces"
+                          value={settings.myPieceColor}
+                          fallbackValue={DEFAULT_SETTINGS.myPieceColor}
+                          onChange={(value) =>
+                            handleUpdateSetting("myPieceColor", value)
+                          }
+                        />
 
-                  <div className="mt-5 space-y-4">
-                    <ColorPicker
-                      title="Your Pieces"
-                      value={settings.myPieceColor}
-                      fallbackValue={DEFAULT_SETTINGS.myPieceColor}
-                      onChange={(value) =>
-                        handleUpdateSetting("myPieceColor", value)
-                      }
-                    />
+                        <ColorPicker
+                          title="Opponent Pieces"
+                          value={settings.opponentPieceColor}
+                          fallbackValue={DEFAULT_SETTINGS.opponentPieceColor}
+                          onChange={(value) =>
+                            handleUpdateSetting("opponentPieceColor", value)
+                          }
+                        />
 
-                    <ColorPicker
-                      title="Opponent Pieces"
-                      value={settings.opponentPieceColor}
-                      fallbackValue={DEFAULT_SETTINGS.opponentPieceColor}
-                      onChange={(value) =>
-                        handleUpdateSetting("opponentPieceColor", value)
-                      }
-                    />
+                        <ColorPicker
+                          title="Tile Color 1"
+                          value={settings.lightTileColor}
+                          fallbackValue={DEFAULT_SETTINGS.lightTileColor}
+                          onChange={(value) =>
+                            handleUpdateSetting("lightTileColor", value)
+                          }
+                        />
 
-                    <ColorPicker
-                      title="Tile Color 1"
-                      value={settings.lightTileColor}
-                      fallbackValue={DEFAULT_SETTINGS.lightTileColor}
-                      onChange={(value) =>
-                        handleUpdateSetting("lightTileColor", value)
-                      }
-                    />
-
-                    <ColorPicker
-                      title="Tile Color 2"
-                      value={settings.darkTileColor}
-                      fallbackValue={DEFAULT_SETTINGS.darkTileColor}
-                      onChange={(value) =>
-                        handleUpdateSetting("darkTileColor", value)
-                      }
-                    />
-                  </div>
+                        <ColorPicker
+                          title="Tile Color 2"
+                          value={settings.darkTileColor}
+                          fallbackValue={DEFAULT_SETTINGS.darkTileColor}
+                          onChange={(value) =>
+                            handleUpdateSetting("darkTileColor", value)
+                          }
+                        />
+                      </>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex justify-center">
                   <Board
-                    board={PREVIEW_BOARD}
+                    board={DEFAULT_BOARD}
                     selected={null}
                     validMoves={[]}
                     onSquareClick={() => undefined}
@@ -209,7 +241,7 @@ export default function Settings() {
           </div>
         </section>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-8 flex items-center gap-3">
           <button
             type="button"
             onClick={handleSaveSettings}
@@ -231,7 +263,7 @@ export default function Settings() {
         </div>
 
         {saved && (
-          <p className="mt-4 text-center text-sm font-bold text-green-600">
+          <p className="mt-4 text-center text-sm font-bold text-green-400">
             Settings saved successfully.
           </p>
         )}
@@ -268,7 +300,7 @@ function ColorPicker({
         <input
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="input"
+          className="input w-full rounded-xl border border-gray-300 p-2 text-gray-700"
         />
       </div>
     </div>

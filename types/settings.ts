@@ -1,5 +1,6 @@
 export type CheckerSettings = {
   playerName: string;
+  theme: string;
   myPieceColor: string;
   opponentPieceColor: string;
   lightTileColor: string;
@@ -9,6 +10,7 @@ export type CheckerSettings = {
 
 export const DEFAULT_SETTINGS: CheckerSettings = {
   playerName: "",
+  theme: "",
   myPieceColor: "#f7e7ce",
   opponentPieceColor: "#4a2e1b",
   lightTileColor: "#f0d9b5",
