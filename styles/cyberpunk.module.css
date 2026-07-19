@@ -183,6 +183,163 @@
   transition: 0.08s;
 }
 
+.darkKing,
+.lightKing {
+  position: relative;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  cursor: grab;
+  overflow: hidden;
+  will-change: transform, filter, box-shadow;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    filter 0.35s ease;
+}
+
+.darkKing::before,
+.lightKing::before {
+  content: "";
+  position: absolute;
+  inset: 16%;
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.darkKing::after,
+.lightKing::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.08) 0px,
+    rgba(255, 255, 255, 0.08) 2px,
+    transparent 2px,
+    transparent 6px
+  );
+  mix-blend-mode: screen;
+  opacity: 0.35;
+  animation: scan 3s linear infinite;
+  pointer-events: none;
+}
+
+.darkKing {
+  background: radial-gradient(
+    circle at 30% 25%,
+    #4ef5ff 0%,
+    #00d0ff 22%,
+    #0b2344 60%,
+    #03040d 100%
+  );
+  border: 1px solid #ffffff;
+  box-shadow:
+    inset 0 0 25px rgba(0, 255, 255, 0.7),
+    inset 0 -10px 20px rgba(0, 0, 0, 0.8),
+    0 0 15px rgba(0, 255, 255, 0.9),
+    0 0 45px rgba(0, 170, 255, 0.6),
+    0 10px 30px rgba(0, 0, 0, 0.8);
+}
+
+.lightKing {
+  background: radial-gradient(
+    circle at 30% 25%,
+    #ff9df9 0%,
+    #ff46d2 25%,
+    #5f1d75 62%,
+    #16051d 100%
+  );
+  border: 1px solid #ffffff;
+  box-shadow:
+    inset 0 0 25px rgba(255, 80, 220, 0.7),
+    inset 0 -10px 20px rgba(0, 0, 0, 0.8),
+    0 0 15px rgba(255, 60, 220, 0.9),
+    0 0 50px rgba(255, 0, 180, 0.6),
+    0 10px 30px rgba(0, 0, 0, 0.8);
+}
+
+.darkKing::before {
+  background:
+    url("data:image/svg+xml,\
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>\
+      <path d='M15,70 L25,30 L50,50 L75,30 L85,70 Z' fill='rgba(0, 208, 255, 0.2)' stroke='%2300d0ff' stroke-width='6' stroke-linejoin='round'/>\
+      <path d='M15,70 L25,30 L50,50 L75,30 L85,70 Z' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linejoin='round'/>\
+      <line x1='15' y1='80' x2='85' y2='80' stroke='%2300d0ff' stroke-width='8' stroke-linecap='round'/>\
+      <line x1='15' y1='80' x2='85' y2='80' stroke='%23ffffff' stroke-width='3' stroke-linecap='round'/>\
+      <circle cx='25' cy='20' r='4' fill='%23ffffff' stroke='%2300d0ff' stroke-width='3'/>\
+      <circle cx='50' cy='40' r='4' fill='%23ffffff' stroke='%2300d0ff' stroke-width='3'/>\
+      <circle cx='75' cy='20' r='4' fill='%23ffffff' stroke='%2300d0ff' stroke-width='3'/>\
+    </svg>"),
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(0, 255, 255, 0.75) 20%,
+      rgba(0, 255, 255, 0.2) 45%,
+      transparent 80%
+    );
+  background-size: 75% 75%, 100% 100%;
+  background-position: center, center;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 25px cyan, inset 0 0 8px white;
+}
+
+.lightKing::before {
+  background:
+    url("data:image/svg+xml,\
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>\
+      <path d='M15,70 L25,30 L50,50 L75,30 L85,70 Z' fill='rgba(255, 70, 210, 0.2)' stroke='%23ff46d2' stroke-width='6' stroke-linejoin='round'/>\
+      <path d='M15,70 L25,30 L50,50 L75,30 L85,70 Z' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linejoin='round'/>\
+      <line x1='15' y1='80' x2='85' y2='80' stroke='%23ff46d2' stroke-width='8' stroke-linecap='round'/>\
+      <line x1='15' y1='80' x2='85' y2='80' stroke='%23ffffff' stroke-width='3' stroke-linecap='round'/>\
+      <circle cx='25' cy='20' r='4' fill='%23ffffff' stroke='%23ff46d2' stroke-width='3'/>\
+      <circle cx='50' cy='40' r='4' fill='%23ffffff' stroke='%23ff46d2' stroke-width='3'/>\
+      <circle cx='75' cy='20' r='4' fill='%23ffffff' stroke='%23ff46d2' stroke-width='3'/>\
+    </svg>"),
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.95),
+      rgba(255, 100, 255, 0.8) 20%,
+      rgba(255, 0, 180, 0.2) 50%,
+      transparent 80%
+    );
+  background-size: 75% 75%, 100% 100%;
+  background-position: center, center;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 25px #ff00cc, inset 0 0 8px white;
+}
+
+.darkKing:hover,
+.lightKing:hover {
+  transform: translateY(-10px) scale(1.08);
+  filter: brightness(1.25) saturate(1.35);
+}
+
+.darkKing:hover {
+  box-shadow:
+    inset 0 0 35px #ffffff,
+    0 5px 25px cyan,
+    0 10px 60px cyan,
+    0 15px 90px rgba(0, 255, 255, 0.7);
+}
+
+.lightKing:hover {
+  box-shadow:
+    inset 0 0 35px #ffffff,
+    0 5px 25px #ff57f2,
+    0 10px 60px #ff00c8,
+    0 15px 90px rgba(255, 0, 200, 0.7);
+}
+
+.darkKing:active,
+.lightKing:active {
+  cursor: grabbing;
+  transform: scale(0.95) translateY(2px);
+  transition: 0.08s;
+}
+
 @keyframes scan {
   from {
     transform: translateY(0);
@@ -205,7 +362,7 @@
     filter 0.25s ease,
     box-shadow 0.25s ease;
 
-  border: 1px solid rgba(255, 255, 255, 0.08); /* Slightly brighter border */
+  border: 1px solid rgba(255, 255, 255, 0.08);
 
   isolation: isolate;
 }

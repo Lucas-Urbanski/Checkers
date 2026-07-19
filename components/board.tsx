@@ -28,11 +28,21 @@ function renderPiece(
   if (!pieceType) return null;
 
   const isDark = pieceType === "dark";
-  const pieceClass = isDark ? styles.darkPiece : styles.lightPiece;
+  const isKing = false;
+  let pieceClass;
+  if (isKing) {
+    pieceClass = isDark ? styles.darkPiece : styles.lightPiece;
+  } else {
+    pieceClass = isDark ? styles.darkKing : styles.lightKing;
+  }
 
   const pieceStyle = isCyberpunk
     ? {}
-    : { background: pieceBackground(isDark ? theme.opponentPieceColor : theme.myPieceColor) };
+    : {
+        background: pieceBackground(
+          isDark ? theme.opponentPieceColor : theme.myPieceColor,
+        ),
+      };
 
   return (
     <button
@@ -68,12 +78,18 @@ function renderSquares(
       const squareClasses = [
         isDarkSquare ? styles.darkSquare : styles.lightSquare,
         isSelected ? styles.selected : "",
-        isValidMove ? styles.validMove : ""
-      ].filter(Boolean).join(" ");
+        isValidMove ? styles.validMove : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
 
       const squareStyle = isCyberpunk
         ? {}
-        : { background: isDarkSquare ? theme.darkTileColor : theme.lightTileColor };
+        : {
+            background: isDarkSquare
+              ? theme.darkTileColor
+              : theme.lightTileColor,
+          };
 
       squares.push(
         <div
@@ -82,7 +98,15 @@ function renderSquares(
           style={squareStyle}
           onClick={() => onSquareClick(row, col)}
         >
-          {renderPiece(board[row][col], row, col, theme, styles, isCyberpunk, onSquareClick)}
+          {renderPiece(
+            board[row][col],
+            row,
+            col,
+            theme,
+            styles,
+            isCyberpunk,
+            onSquareClick,
+          )}
         </div>,
       );
     }
@@ -124,7 +148,15 @@ export default function Board({
 
   return (
     <div className={boardContainerClass}>
-      {renderSquares(board, selected, validMoves, currentTheme, styles, isCyberpunk, onSquareClick)}
+      {renderSquares(
+        board,
+        selected,
+        validMoves,
+        currentTheme,
+        styles,
+        isCyberpunk,
+        onSquareClick,
+      )}
     </div>
   );
 }
