@@ -11,11 +11,6 @@ export const DEFAULT_BOARD: BoardState = [
   ["light", null, "light", null, "light", null, "light", null],
 ];
 
-export function isKing(board: BoardState, row: number, col: number): boolean {
-  const piece = board[row][col];
-  return piece === "darkKing" || piece === "lightKing";
-}
-
 export function validMove(
   board: BoardState,
   fromRow: number,
