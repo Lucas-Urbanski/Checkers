@@ -3,7 +3,6 @@
 import type { BoardState, PieceValue } from "@/types/board";
 import { useSettings } from "@/themes/context";
 import type { CheckerSettings } from "@/types/settings";
-
 import defaultStyles from "@/styles/default.module.css";
 import cyberpunkStyles from "@/styles/cyberpunk.module.css";
 
@@ -27,13 +26,14 @@ function renderPiece(
 ) {
   if (!pieceType) return null;
 
-  const isDark = pieceType === "dark";
-  const isKing = false;
+  const isKing = pieceType === "darkKing" || pieceType === "lightKing";
+  const isDark = pieceType === "dark" || pieceType === "darkKing";
+
   let pieceClass;
   if (isKing) {
-    pieceClass = isDark ? styles.darkPiece : styles.lightPiece;
-  } else {
     pieceClass = isDark ? styles.darkKing : styles.lightKing;
+  } else {
+    pieceClass = isDark ? styles.darkPiece : styles.lightPiece;
   }
 
   const pieceStyle = isCyberpunk

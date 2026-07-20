@@ -3,14 +3,14 @@
 import { useState } from "react";
 import Board from "@/components/board";
 import { DEFAULT_BOARD, getValidMoves, applyMove } from "@/components/game";
-import type { BoardState, PieceValue } from "@/types/board";
+import type { BoardState } from "@/types/board";
 import { useSettings } from "@/themes/context";
 
 export default function Game() {
   const [board, setBoard] = useState<BoardState>(DEFAULT_BOARD);
-  const [turn, setTurn] = useState<Exclude<PieceValue, null>>("light");
+  const [turn, setTurn] = useState<"light" | "dark">("light");
   const [selected, setSelected] = useState<[number, number] | null>(null);
-  
+
   const { settings } = useSettings();
 
   const validMoves = selected
@@ -39,7 +39,7 @@ export default function Game() {
 
     const targetPiece = board[row][col];
 
-    if (targetPiece === turn) {
+    if (targetPiece === turn || targetPiece === `${turn}King`) {
       setSelected([row, col]);
       return;
     }
