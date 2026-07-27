@@ -5,11 +5,13 @@ import Board from "@/components/board";
 import { DEFAULT_BOARD, getValidMoves, applyMove } from "@/components/game";
 import type { BoardState } from "@/types/board";
 import { useSettings } from "@/themes/context";
+import { checkForWinner } from "@/components/game";
 
 export default function Game() {
   const [board, setBoard] = useState<BoardState>(DEFAULT_BOARD);
   const [turn, setTurn] = useState<"light" | "dark">("light");
   const [selected, setSelected] = useState<[number, number] | null>(null);
+  const [winner, setWinner] = useState("No Winner")
 
   const { settings } = useSettings();
 
@@ -34,6 +36,11 @@ export default function Game() {
       setBoard(nextBoard);
       setTurn(nextTurn);
       setSelected(null);
+      const isWinner = checkForWinner(nextBoard);
+      if (isWinner != "No Winner"){
+      //add popup that says the game is over
+      setWinner(isWinner);
+      }
       return;
     }
 
@@ -43,12 +50,12 @@ export default function Game() {
       setSelected([row, col]);
       return;
     }
-
     setSelected(null);
   }
 
   return (
     <div className="flex h-screen w-full items-center justify-center">
+      {winner == "No Winner" ?
       <Board
         board={board}
         selected={selected}
@@ -62,6 +69,9 @@ export default function Game() {
           darkTileColor: settings.darkTileColor,
         }}
       />
+      :
+      <h1>{winner}</h1>
+      } 
     </div>
   );
 }
