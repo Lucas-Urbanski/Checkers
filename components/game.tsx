@@ -15,6 +15,30 @@ function isInsideBoard(row: number, col: number) {
   return row >= 0 && row < 8 && col >= 0 && col < 8;
 }
 
+export function checkForWinner(board: BoardState){
+  let numberOfLight = 0;
+  let numberOfDark = 0;
+  board.forEach(row => {
+    row.forEach(square =>{
+      if (square == "dark" || square == "darkKing") {
+        numberOfDark ++;
+      }
+      if (square == "light" || square == "lightKing") {
+        numberOfLight ++;
+      }
+    })
+  })
+  if (numberOfDark == 0){
+    return "Light Won"
+  }
+  else if (numberOfLight == 0){
+    return "Dark Won"
+  }
+  else {
+    return "No Winner"
+  }
+}
+
 export function getPieceOwner(piece: PieceValue): Player | null {
   if (piece === "light" || piece === "lightKing") return "light";
   if (piece === "dark" || piece === "darkKing") return "dark";
