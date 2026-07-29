@@ -80,9 +80,7 @@ function renderSquares(
       );
 
       const isSelected =
-        selected?.[0] === row &&
-        selected?.[1] === col &&
-        !isForcedCapturePiece;
+        selected?.[0] === row && selected?.[1] === col && !isForcedCapturePiece;
 
       const isValidMove = validMoves.some(([r, c]) => r === row && c === col);
 

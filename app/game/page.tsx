@@ -4,7 +4,7 @@ import { useState } from "react";
 import Board from "@/components/board";
 import {
   DEFAULT_BOARD,
-  getValidMovesForTurn,
+  getLegalMoves,
   applyMove,
   checkForWinner,
   getPieceOwner,
@@ -24,7 +24,7 @@ export default function Game() {
   const { settings } = useSettings();
 
   const validMoves = selected
-    ? getValidMovesForTurn(board, selected[0], selected[1], turn)
+    ? getLegalMoves(board, selected[0], selected[1], turn)
     : [];
 
   const forcedCapturePieces =
@@ -69,7 +69,7 @@ export default function Game() {
     const targetPiece = board[row][col];
 
     if (getPieceOwner(targetPiece) === turn) {
-      const selectedPieceMoves = getValidMovesForTurn(board, row, col, turn);
+      const selectedPieceMoves = getLegalMoves(board, row, col, turn);
 
       if (playerHasCapture(board, turn) && selectedPieceMoves.length === 0) {
         return;

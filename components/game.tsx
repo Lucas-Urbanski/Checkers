@@ -44,10 +44,10 @@ export function checkForWinner(board: BoardState) {
     for (let col = 0; col < 8; col++) {
       const owner = getPieceOwner(board[row][col]);
 
-      if (owner === "light") {
+      if (owner === "light" && !lightWins) {
         if (getValidMoves(board, row, col).length > 0) lightWins = true;
       }
-      if (owner === "dark") {
+      if (owner === "dark" && !darkWins) {
         if (getValidMoves(board, row, col).length > 0) darkWins = true;
       }
 
@@ -129,30 +129,34 @@ function getCaptureMoves(
   return captures;
 }
 
+function findPieces(board: BoardState, player: Player): [number, number][] {
+  const pieces: [number, number][] = [];
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      if (getPieceOwner(board[row][col]) === player) {
+        pieces.push([row, col]);
+      }
+    }
+  }
+  return pieces;
+}
+
 export function getCapturingPieces(
   board: BoardState,
   player: Player,
 ): [number, number][] {
-  const capturingPieces: [number, number][] = [];
-
-  board.forEach((row, rowIndex) => {
-    row.forEach((piece, colIndex) => {
-      if (getPieceOwner(piece) !== player) return;
-
-      if (getCaptureMoves(board, rowIndex, colIndex).length > 0) {
-        capturingPieces.push([rowIndex, colIndex]);
-      }
-    });
-  });
-
-  return capturingPieces;
+  return findPieces(board, player).filter(
+    ([row, col]) => getCaptureMoves(board, row, col).length > 0,
+  );
 }
 
-export function playerHasCapture(board: BoardState, player: Player) {
-  return getCapturingPieces(board, player).length > 0;
+export function playerHasCapture(board: BoardState, player: Player): boolean {
+  return findPieces(board, player).some(
+    ([row, col]) => getCaptureMoves(board, row, col).length > 0,
+  );
 }
 
-export function getValidMovesForTurn(
+export function getLegalMoves(
   board: BoardState,
   row: number,
   col: number,
@@ -165,8 +169,12 @@ export function getValidMovesForTurn(
 
   const captureMoves = getCaptureMoves(board, row, col);
 
-  if (playerHasCapture(board, turn)) {
+  if (captureMoves.length > 0) {
     return captureMoves;
+  }
+
+  if (playerHasCapture(board, turn)) {
+    return [];
   }
 
   return getNormalMoves(board, row, col);
@@ -194,7 +202,7 @@ function validMove(
   toRow: number,
   toCol: number,
 ): boolean {
-  return getValidMovesForTurn(board, fromRow, fromCol, currentTurn).some(
+  return getLegalMoves(board, fromRow, fromCol, currentTurn).some(
     ([row, col]) => row === toRow && col === toCol,
   );
 }
