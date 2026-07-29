@@ -11,74 +11,69 @@ export const DEFAULT_BOARD: BoardState = [
   ["light", null, "light", null, "light", null, "light", null],
 ];
 
+const KING_DIRECTIONS: [number, number][] = [
+  [1, -1],
+  [1, 1],
+  [-1, -1],
+  [-1, 1],
+];
+const DARK_DIRECTIONS: [number, number][] = [
+  [1, -1],
+  [1, 1],
+];
+const LIGHT_DIRECTIONS: [number, number][] = [
+  [-1, -1],
+  [-1, 1],
+];
+
 function isInsideBoard(row: number, col: number) {
   return row >= 0 && row < 8 && col >= 0 && col < 8;
 }
 
-export function checkForWinner(board: BoardState){
-  let numberOfLight = 0;
-  let numberOfDark = 0;
-  board.forEach(row => {
-    row.forEach(square =>{
-      if (square == "dark" || square == "darkKing") {
-        numberOfDark ++;
-      }
-      if (square == "light" || square == "lightKing") {
-        numberOfLight ++;
-      }
-    })
-  })
-  if (numberOfDark == 0){
-    return "Light Won"
-  }
-  else if (numberOfLight == 0){
-    return "Dark Won"
-  }
-  else {
-    return "No Winner"
-  }
-}
-
-export function getPieceOwner(piece: PieceValue): Player | null {
+function getPieceOwner(piece: PieceValue): Player | null {
   if (piece === "light" || piece === "lightKing") return "light";
   if (piece === "dark" || piece === "darkKing") return "dark";
   return null;
 }
 
-function isKing(piece: PieceValue) {
-  return piece === "lightKing" || piece === "darkKing";
-}
+export function checkForWinner(board: BoardState) {
+  let lightWins = false;
+  let darkWins = false;
 
-function getMoveDirections(piece: Exclude<PieceValue, null>): [number, number][] {
-  if (isKing(piece)) {
-    return [
-      [1, -1],
-      [1, 1],
-      [-1, -1],
-      [-1, 1],
-    ];
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const owner = getPieceOwner(board[row][col]);
+
+      if (owner === "light") {
+        if (getValidMoves(board, row, col).length > 0) lightWins = true;
+      }
+      if (owner === "dark") {
+        if (getValidMoves(board, row, col).length > 0) darkWins = true;
+      }
+
+      if (lightWins && darkWins) return "No Winner";
+    }
   }
 
-  if (piece === "dark") {
-    return [
-      [1, -1],
-      [1, 1],
-    ];
-  }
-
-  return [
-    [-1, -1],
-    [-1, 1],
-  ];
+  if (!darkWins) return "Light Wins";
+  if (!lightWins) return "Dark Wins";
+  return "No Winner";
 }
 
-export function getNormalMoves(
+function getMoveDirections(
+  piece: Exclude<PieceValue, null>,
+): [number, number][] {
+  if (piece === "lightKing" || piece === "darkKing") return KING_DIRECTIONS;
+  if (piece === "dark") return DARK_DIRECTIONS;
+  return LIGHT_DIRECTIONS;
+}
+
+function getNormalMoves(
   board: BoardState,
   row: number,
   col: number,
 ): [number, number][] {
   const piece = board[row][col];
-
   if (!piece) return [];
 
   const moves: [number, number][] = [];
@@ -98,13 +93,12 @@ export function getNormalMoves(
   return moves;
 }
 
-export function getCaptureMoves(
+function getCaptureMoves(
   board: BoardState,
   row: number,
   col: number,
 ): [number, number][] {
   const piece = board[row][col];
-
   if (!piece) return [];
 
   const pieceOwner = getPieceOwner(piece);
@@ -149,7 +143,7 @@ export function getValidMoves(
   return getNormalMoves(board, row, col);
 }
 
-export function validMove(
+function validMove(
   board: BoardState,
   fromRow: number,
   fromCol: number,
@@ -189,7 +183,6 @@ export function applyMove(
   }
 
   const movingPiece = board[fromRow][fromCol];
-
   if (!movingPiece) {
     return {
       board,
@@ -199,14 +192,13 @@ export function applyMove(
     };
   }
 
-  const nextBoard = board.map((boardRow) => [...boardRow]) as BoardState;
-
   const rowDiff = toRow - fromRow;
   const colDiff = toCol - fromCol;
+  const isCaptureMove = Math.abs(rowDiff) === 2 && Math.abs(colDiff) === 2;
+  const nextBoard = [...board];
 
-  const isCaptureMove =
-    Math.abs(rowDiff) === 2 && Math.abs(colDiff) === 2;
-
+  nextBoard[fromRow] = [...nextBoard[fromRow]];
+  nextBoard[toRow] = [...nextBoard[toRow]];
   nextBoard[fromRow][fromCol] = null;
   nextBoard[toRow][toCol] = crownPiece(movingPiece, toRow);
 
@@ -214,10 +206,10 @@ export function applyMove(
     const capturedRow = fromRow + rowDiff / 2;
     const capturedCol = fromCol + colDiff / 2;
 
+    nextBoard[capturedRow] = [...nextBoard[capturedRow]];
     nextBoard[capturedRow][capturedCol] = null;
 
     const nextCaptureMoves = getCaptureMoves(nextBoard, toRow, toCol);
-
     if (nextCaptureMoves.length > 0) {
       return {
         board: nextBoard,
