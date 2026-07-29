@@ -30,6 +30,7 @@ function renderPiece(
   const isDark = pieceType === "dark" || pieceType === "darkKing";
 
   let pieceClass;
+
   if (isKing) {
     pieceClass = isDark ? styles.darkKing : styles.lightKing;
   } else {
@@ -61,6 +62,7 @@ function renderSquares(
   board: BoardState,
   selected: [number, number] | null,
   validMoves: [number, number][],
+  forcedCapturePieces: [number, number][],
   theme: BoardTheme,
   styles: Record<string, string>,
   isCyberpunk: boolean,
@@ -72,13 +74,23 @@ function renderSquares(
     for (let col = 0; col < 8; col++) {
       const key = `${row}-${col}`;
       const isDarkSquare = (row + col) % 2 !== 0;
-      const isSelected = selected?.[0] === row && selected?.[1] === col;
+
+      const isForcedCapturePiece = forcedCapturePieces.some(
+        ([r, c]) => r === row && c === col,
+      );
+
+      const isSelected =
+        selected?.[0] === row &&
+        selected?.[1] === col &&
+        !isForcedCapturePiece;
+
       const isValidMove = validMoves.some(([r, c]) => r === row && c === col);
 
       const squareClasses = [
         isDarkSquare ? styles.darkSquare : styles.lightSquare,
         isSelected ? styles.selected : "",
         isValidMove ? styles.validMove : "",
+        isForcedCapturePiece ? styles.forcedCapture : "",
       ]
         .filter(Boolean)
         .join(" ");
@@ -119,6 +131,7 @@ export default function Board({
   board,
   selected,
   validMoves,
+  forcedCapturePieces = [],
   onSquareClick,
   theme,
   sizeClassName = "h-[480px] w-[480px]",
@@ -126,6 +139,7 @@ export default function Board({
   board: BoardState;
   selected: [number, number] | null;
   validMoves: [number, number][];
+  forcedCapturePieces?: [number, number][];
   onSquareClick: (row: number, col: number) => void;
   theme?: BoardTheme;
   sizeClassName?: string;
@@ -152,6 +166,7 @@ export default function Board({
         board,
         selected,
         validMoves,
+        forcedCapturePieces,
         currentTheme,
         styles,
         isCyberpunk,

@@ -15,28 +15,31 @@ function isInsideBoard(row: number, col: number) {
   return row >= 0 && row < 8 && col >= 0 && col < 8;
 }
 
-export function checkForWinner(board: BoardState){
+export function checkForWinner(board: BoardState) {
   let numberOfLight = 0;
   let numberOfDark = 0;
-  board.forEach(row => {
-    row.forEach(square =>{
-      if (square == "dark" || square == "darkKing") {
-        numberOfDark ++;
+
+  board.forEach((row) => {
+    row.forEach((square) => {
+      if (square === "dark" || square === "darkKing") {
+        numberOfDark++;
       }
-      if (square == "light" || square == "lightKing") {
-        numberOfLight ++;
+
+      if (square === "light" || square === "lightKing") {
+        numberOfLight++;
       }
-    })
-  })
-  if (numberOfDark == 0){
-    return "Light Won"
+    });
+  });
+
+  if (numberOfDark === 0) {
+    return "Light Won";
   }
-  else if (numberOfLight == 0){
-    return "Dark Won"
+
+  if (numberOfLight === 0) {
+    return "Dark Won";
   }
-  else {
-    return "No Winner"
-  }
+
+  return "No Winner";
 }
 
 export function getPieceOwner(piece: PieceValue): Player | null {
@@ -135,6 +138,49 @@ export function getCaptureMoves(
   return captures;
 }
 
+export function getCapturingPieces(
+  board: BoardState,
+  player: Player,
+): [number, number][] {
+  const capturingPieces: [number, number][] = [];
+
+  board.forEach((row, rowIndex) => {
+    row.forEach((piece, colIndex) => {
+      if (getPieceOwner(piece) !== player) return;
+
+      if (getCaptureMoves(board, rowIndex, colIndex).length > 0) {
+        capturingPieces.push([rowIndex, colIndex]);
+      }
+    });
+  });
+
+  return capturingPieces;
+}
+
+export function playerHasCapture(board: BoardState, player: Player) {
+  return getCapturingPieces(board, player).length > 0;
+}
+
+export function getValidMovesForTurn(
+  board: BoardState,
+  row: number,
+  col: number,
+  turn: Player,
+): [number, number][] {
+  const piece = board[row][col];
+
+  if (!piece) return [];
+  if (getPieceOwner(piece) !== turn) return [];
+
+  const captureMoves = getCaptureMoves(board, row, col);
+
+  if (playerHasCapture(board, turn)) {
+    return captureMoves;
+  }
+
+  return getNormalMoves(board, row, col);
+}
+
 export function getValidMoves(
   board: BoardState,
   row: number,
@@ -151,12 +197,13 @@ export function getValidMoves(
 
 export function validMove(
   board: BoardState,
+  currentTurn: Player,
   fromRow: number,
   fromCol: number,
   toRow: number,
   toCol: number,
 ): boolean {
-  return getValidMoves(board, fromRow, fromCol).some(
+  return getValidMovesForTurn(board, fromRow, fromCol, currentTurn).some(
     ([row, col]) => row === toRow && col === toCol,
   );
 }
@@ -179,7 +226,7 @@ export function applyMove(
   const [fromRow, fromCol] = from;
   const [toRow, toCol] = to;
 
-  if (!validMove(board, fromRow, fromCol, toRow, toCol)) {
+  if (!validMove(board, currentTurn, fromRow, fromCol, toRow, toCol)) {
     return {
       board,
       turn: currentTurn,
@@ -204,8 +251,7 @@ export function applyMove(
   const rowDiff = toRow - fromRow;
   const colDiff = toCol - fromCol;
 
-  const isCaptureMove =
-    Math.abs(rowDiff) === 2 && Math.abs(colDiff) === 2;
+  const isCaptureMove = Math.abs(rowDiff) === 2 && Math.abs(colDiff) === 2;
 
   nextBoard[fromRow][fromCol] = null;
   nextBoard[toRow][toCol] = crownPiece(movingPiece, toRow);
