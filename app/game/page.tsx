@@ -85,20 +85,24 @@ export default function Game() {
   return (
     <div className="flex h-screen w-full items-center justify-center">
       {winner === "No Winner" ? (
-        <Board
-          board={board}
-          selected={selected}
-          validMoves={validMoves}
-          forcedCapturePieces={forcedCapturePieces}
-          onSquareClick={handleSquareClick}
-          sizeClassName="h-[480px] w-[480px]"
-          theme={{
-            myPieceColor: settings.myPieceColor,
-            opponentPieceColor: settings.opponentPieceColor,
-            lightTileColor: settings.lightTileColor,
-            darkTileColor: settings.darkTileColor,
-          }}
-        />
+        <div>
+          <p> dark </p>
+          <Board
+            board={board}
+            selected={selected}
+            validMoves={validMoves}
+            forcedCapturePieces={forcedCapturePieces}
+            onSquareClick={handleSquareClick}
+            sizeClassName="h-[480px] w-[480px]"
+            theme={{
+              myPieceColor: settings.myPieceColor,
+              opponentPieceColor: settings.opponentPieceColor,
+              lightTileColor: settings.lightTileColor,
+              darkTileColor: settings.darkTileColor,
+            }}
+          />
+          <p> light </p>
+        </div>
       ) : (
         <h1>{winner}</h1>
       )}
