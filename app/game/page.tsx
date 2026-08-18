@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import Board from "@/components/board";
 import {
   DEFAULT_BOARD,
@@ -8,11 +8,15 @@ import {
   applyMove,
   checkForWinner,
   getPieceOwner,
-  playerHasCapture,
   getCapturingPieces,
 } from "@/components/game";
 import type { BoardState, Player } from "@/types/board";
 import { useSettings } from "@/themes/context";
+import defaultStyles from "@/styles/default.module.css";
+import cyberpunkStyles from "@/styles/cyberpunk.module.css";
+
+const pieceBackground = (color: string) =>
+  `radial-gradient(circle at 30% 30%, rgba(255,255,255,.55) 0%, ${color} 38%, ${color} 68%, rgba(0,0,0,.55) 100%)`;
 
 export default function Game() {
   const [board, setBoard] = useState<BoardState>(DEFAULT_BOARD);
@@ -23,70 +27,96 @@ export default function Game() {
 
   const { settings } = useSettings();
 
-  const validMoves = selected
-    ? getLegalMoves(board, selected[0], selected[1], turn)
-    : [];
+  const isCyberpunk = settings.theme === "cyberpunk";
 
-  const forcedCapturePieces =
-    mustContinueJump && selected ? [selected] : getCapturingPieces(board, turn);
+  const validMoves = useMemo(() => {
+    return selected ? getLegalMoves(board, selected[0], selected[1], turn) : [];
+  }, [board, selected, turn]);
 
-  function handleSquareClick(row: number, col: number) {
-    const clickedValidMove = validMoves.some(
-      ([validRow, validCol]) => validRow === row && validCol === col,
-    );
+  const forcedCapturePieces = useMemo(() => {
+    return mustContinueJump && selected
+      ? [selected]
+      : getCapturingPieces(board, turn);
+  }, [board, turn, mustContinueJump, selected]);
 
-    if (selected && clickedValidMove) {
-      const {
-        board: nextBoard,
-        turn: nextTurn,
-        mustContinueJump: nextMustContinueJump,
-        selectedPiece,
-      } = applyMove(board, turn, selected, [row, col]);
+  const handleSquareClick = useCallback(
+    (row: number, col: number) => {
+      const clickedValidMove = validMoves.some(
+        ([validRow, validCol]) => validRow === row && validCol === col,
+      );
 
-      setBoard(nextBoard);
-      setTurn(nextTurn);
-      setSelected(selectedPiece);
-      setMustContinueJump(nextMustContinueJump);
+      if (selected && clickedValidMove) {
+        const {
+          board: nextBoard,
+          turn: nextTurn,
+          mustContinueJump: nextMustContinueJump,
+          selectedPiece,
+        } = applyMove(board, turn, selected, [row, col]);
 
-      const isWinner = checkForWinner(nextBoard);
+        setBoard(nextBoard);
+        setTurn(nextTurn);
+        setSelected(selectedPiece);
+        setMustContinueJump(nextMustContinueJump);
 
-      if (isWinner !== "No Winner") {
-        setWinner(isWinner);
-      }
-
-      return;
-    }
-
-    if (mustContinueJump) {
-      return;
-    }
-
-    if (selected && selected[0] === row && selected[1] === col) {
-      setSelected(null);
-      return;
-    }
-
-    const targetPiece = board[row][col];
-
-    if (getPieceOwner(targetPiece) === turn) {
-      const selectedPieceMoves = getLegalMoves(board, row, col, turn);
-
-      if (playerHasCapture(board, turn) && selectedPieceMoves.length === 0) {
+        const isWinner = checkForWinner(nextBoard);
+        if (isWinner !== "No Winner") {
+          setWinner(isWinner);
+        }
         return;
       }
 
-      setSelected([row, col]);
-      return;
-    }
+      if (mustContinueJump) return;
 
-    setSelected(null);
-  }
+      if (selected && selected[0] === row && selected[1] === col) {
+        setSelected(null);
+        return;
+      }
+
+      const targetPiece = board[row][col];
+
+      if (getPieceOwner(targetPiece) === turn) {
+        const selectedPieceMoves = getLegalMoves(board, row, col, turn);
+        if (selectedPieceMoves.length === 0) return;
+
+        setSelected([row, col]);
+        return;
+      }
+
+      setSelected(null);
+    },
+    [board, turn, selected, validMoves, mustContinueJump],
+  );
 
   return (
     <div className="flex h-screen w-full items-center justify-center">
       {winner === "No Winner" ? (
-        <div>
-          <p> dark </p>
+        <div className="flex flex-col gap-4">
+          <div
+            className={`flex items-center gap-1 text-xl transition-opacity ${
+              turn === "dark" ? "opacity-100 font-bold" : "opacity-40"
+            }`}
+          >
+            <div className="flex h-10 w-10 items-center">
+              <div
+                className={
+                  isCyberpunk
+                    ? cyberpunkStyles.darkPiece
+                    : defaultStyles.darkPiece
+                }
+                style={
+                  isCyberpunk
+                    ? {}
+                    : {
+                        background: pieceBackground(
+                          settings.opponentPieceColor,
+                        ),
+                      }
+                }
+              />
+            </div>
+            <p>Opponent</p>
+          </div>
+
           <Board
             board={board}
             selected={selected}
@@ -94,17 +124,34 @@ export default function Game() {
             forcedCapturePieces={forcedCapturePieces}
             onSquareClick={handleSquareClick}
             sizeClassName="h-[480px] w-[480px]"
-            theme={{
-              myPieceColor: settings.myPieceColor,
-              opponentPieceColor: settings.opponentPieceColor,
-              lightTileColor: settings.lightTileColor,
-              darkTileColor: settings.darkTileColor,
-            }}
           />
-          <p> light </p>
+
+          <div
+            className={`flex items-center gap-1 text-xl transition-opacity ${
+              turn === "light" ? "opacity-100 font-bold" : "opacity-40"
+            }`}
+          >
+            <div className="flex h-10 w-10 items-center">
+              <div
+                className={
+                  isCyberpunk
+                    ? cyberpunkStyles.lightPiece
+                    : defaultStyles.lightPiece
+                }
+                style={
+                  isCyberpunk
+                    ? {}
+                    : { background: pieceBackground(settings.myPieceColor) }
+                }
+              />
+            </div>
+            <p>You</p>
+          </div>
         </div>
       ) : (
-        <h1>{winner}</h1>
+        <div className="text-center">
+          <h1 className="mb-4 text-4xl font-bold">{winner}</h1>
+        </div>
       )}
     </div>
   );

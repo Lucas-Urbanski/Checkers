@@ -252,7 +252,11 @@ export function applyMove(
   nextBoard[fromRow] = [...nextBoard[fromRow]];
   nextBoard[toRow] = [...nextBoard[toRow]];
   nextBoard[fromRow][fromCol] = null;
-  nextBoard[toRow][toCol] = crownPiece(movingPiece, toRow);
+  
+  const crownedPiece = crownPiece(movingPiece, toRow);
+  nextBoard[toRow][toCol] = crownedPiece;
+  
+  const wasJustCrowned = movingPiece !== crownedPiece;
 
   if (isCaptureMove) {
     const capturedRow = fromRow + rowDiff / 2;
@@ -261,14 +265,16 @@ export function applyMove(
     nextBoard[capturedRow] = [...nextBoard[capturedRow]];
     nextBoard[capturedRow][capturedCol] = null;
 
-    const nextCaptureMoves = getCaptureMoves(nextBoard, toRow, toCol);
-    if (nextCaptureMoves.length > 0) {
-      return {
-        board: nextBoard,
-        turn: currentTurn,
-        mustContinueJump: true,
-        selectedPiece: [toRow, toCol],
-      };
+    if (!wasJustCrowned) {
+      const nextCaptureMoves = getCaptureMoves(nextBoard, toRow, toCol);
+      if (nextCaptureMoves.length > 0) {
+        return {
+          board: nextBoard,
+          turn: currentTurn,
+          mustContinueJump: true,
+          selectedPiece: [toRow, toCol],
+        };
+      }
     }
   }
 
