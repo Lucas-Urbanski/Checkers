@@ -15,6 +15,8 @@ import { useSettings } from "@/themes/context";
 import defaultStyles from "@/styles/default.module.css";
 import cyberpunkStyles from "@/styles/cyberpunk.module.css";
 
+const MAX_TURNS_WITHOUT_CAPTURE_OR_KING = 20;
+
 const pieceBackground = (color: string) =>
   `radial-gradient(circle at 30% 30%, rgba(255,255,255,.55) 0%, ${color} 38%, ${color} 68%, rgba(0,0,0,.55) 100%)`;
 
@@ -24,6 +26,7 @@ export default function Game() {
   const [selected, setSelected] = useState<[number, number] | null>(null);
   const [winner, setWinner] = useState("No Winner");
   const [mustContinueJump, setMustContinueJump] = useState(false);
+  const [turnsWithoutProgress, setTurnsWithoutProgress] = useState(0);
 
   const { settings } = useSettings();
 
@@ -51,17 +54,33 @@ export default function Game() {
           turn: nextTurn,
           mustContinueJump: nextMustContinueJump,
           selectedPiece,
+          resetTieCounter,
         } = applyMove(board, turn, selected, [row, col]);
+
+        const nextTurnsWithoutProgress = resetTieCounter
+          ? 0
+          : turnsWithoutProgress + 1;
 
         setBoard(nextBoard);
         setTurn(nextTurn);
         setSelected(selectedPiece);
         setMustContinueJump(nextMustContinueJump);
+        setTurnsWithoutProgress(nextTurnsWithoutProgress);
 
         const isWinner = checkForWinner(nextBoard);
+
         if (isWinner !== "No Winner") {
           setWinner(isWinner);
+          return;
         }
+
+        if (
+          !nextMustContinueJump &&
+          nextTurnsWithoutProgress >= MAX_TURNS_WITHOUT_CAPTURE_OR_KING
+        ) {
+          setWinner("DRAW");
+        }
+
         return;
       }
 
@@ -76,6 +95,7 @@ export default function Game() {
 
       if (getPieceOwner(targetPiece) === turn) {
         const selectedPieceMoves = getLegalMoves(board, row, col, turn);
+
         if (selectedPieceMoves.length === 0) return;
 
         setSelected([row, col]);
@@ -84,7 +104,7 @@ export default function Game() {
 
       setSelected(null);
     },
-    [board, turn, selected, validMoves, mustContinueJump],
+    [board, turn, selected, validMoves, mustContinueJump, turnsWithoutProgress],
   );
 
   return (
@@ -147,6 +167,11 @@ export default function Game() {
             </div>
             <p>You</p>
           </div>
+
+          <p className="text-center text-sm font-bold opacity-70">
+            Tie counter: {turnsWithoutProgress}/
+            {MAX_TURNS_WITHOUT_CAPTURE_OR_KING}
+          </p>
         </div>
       ) : (
         <div className="text-center">

@@ -7,4 +7,5 @@ export interface MoveResult {
   turn: Player;
   mustContinueJump: boolean;
   selectedPiece: [number, number] | null;
+  resetTieCounter: boolean;
 }
