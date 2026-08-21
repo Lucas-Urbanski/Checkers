@@ -143,15 +143,15 @@
   box-shadow: 0 0 18px gold;
 }
 
-.darkPiece:hover,
-.lightPiece:hover,
-.moveablePiece:hover {
+.darkPiece:not(.inactivePiece):hover,
+.lightPiece:not(.inactivePiece):hover,
+.moveablePiece:not(.inactivePiece):hover {
   transform: translateY(-10px) scale(1.08);
 
   filter: brightness(1.25) saturate(1.35);
 }
 
-.darkPiece:hover {
+.darkPiece:not(.inactivePiece):hover {
   box-shadow:
     inset 0 0 25px #ff57f2,
     0 5px 18px #ff57f2,
@@ -159,14 +159,14 @@
     0 15px 80px rgba(255, 0, 200, 0.5);
 }
 
-.lightPiece:hover {
+.lightPiece:not(.inactivePiece):hover {
   box-shadow:
     inset 0 0 25px cyan,
     0 5px 18px cyan,
     0 10px 45px cyan,
     0 15px 80px rgba(0, 255, 255, 0.5);
 }
-.moveablePiece:hover {
+.moveablePiece:not(.inactivePiece):hover {
   box-shadow:
     inset 0 0 20px white,
     0 5px 20px gold,
@@ -310,13 +310,13 @@
   box-shadow: 0 0 25px #ff00cc, inset 0 0 8px white;
 }
 
-.darkKing:hover,
-.lightKing:hover {
+.darkKing:not(.inactivePiece):hover,
+.lightKing:not(.inactivePiece):hover {
   transform: translateY(-10px) scale(1.08);
   filter: brightness(1.25) saturate(1.35);
 }
 
-.darkKing:hover {
+.darkKing:not(.inactivePiece):hover {
   box-shadow:
     inset 0 0 35px #ffffff,
     0 5px 25px #ff57f2,
@@ -324,7 +324,7 @@
     0 15px 90px rgba(255, 0, 200, 0.7);
 }
 
-.lightKing:hover {
+.lightKing:not(.inactivePiece):hover {
   box-shadow:
     inset 0 0 35px #ffffff,
     0 5px 25px cyan,
@@ -567,4 +567,8 @@
     transform: scale(1.08);
     opacity: 1;
   }
+}
+
+.inactivePiece {
+  cursor: default;
 }

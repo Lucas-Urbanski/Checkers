@@ -142,6 +142,7 @@ export default function Game() {
             selected={selected}
             validMoves={validMoves}
             forcedCapturePieces={forcedCapturePieces}
+            activeTurn={turn}
             onSquareClick={handleSquareClick}
             sizeClassName="h-[480px] w-[480px]"
           />
@@ -169,7 +170,7 @@ export default function Game() {
           </div>
 
           <p className="text-center text-sm font-bold opacity-70">
-            Tie counter: {turnsWithoutProgress}/
+            Counter: {turnsWithoutProgress}/
             {MAX_TURNS_WITHOUT_CAPTURE_OR_KING}
           </p>
         </div>
