@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useMemo } from "react";
-import type { BoardState, PieceValue } from "@/types/board";
+import type { BoardState, PieceValue, Player } from "@/types/board";
 import { useSettings } from "@/themes/context";
 import type { CheckerSettings } from "@/types/settings";
 import defaultStyles from "@/styles/default.module.css";
@@ -15,6 +15,12 @@ export type BoardTheme = Pick<
 const pieceBackground = (color: string) =>
   `radial-gradient(circle at 30% 30%, rgba(255,255,255,.55) 0%, ${color} 38%, ${color} 68%, rgba(0,0,0,.55) 100%)`;
 
+function getPieceOwner(piece: PieceValue): Player | null {
+  if (piece === "light" || piece === "lightKing") return "light";
+  if (piece === "dark" || piece === "darkKing") return "dark";
+  return null;
+}
+
 const Piece = memo(function Piece({
   pieceType,
   row,
@@ -22,6 +28,7 @@ const Piece = memo(function Piece({
   theme,
   styles,
   isCyberpunk,
+  activeTurn,
   onSquareClick,
 }: {
   pieceType: PieceValue;
@@ -30,12 +37,15 @@ const Piece = memo(function Piece({
   theme: BoardTheme;
   styles: Record<string, string>;
   isCyberpunk: boolean;
+  activeTurn?: Player;
   onSquareClick: (row: number, col: number) => void;
 }) {
   if (!pieceType) return null;
 
   const isKing = pieceType === "darkKing" || pieceType === "lightKing";
   const isDark = pieceType === "dark" || pieceType === "darkKing";
+  const pieceOwner = getPieceOwner(pieceType);
+  const isActivePiece = !activeTurn || pieceOwner === activeTurn;
 
   const pieceClass = isKing
     ? isDark
@@ -56,7 +66,7 @@ const Piece = memo(function Piece({
   return (
     <button
       type="button"
-      className={pieceClass}
+      className={`${pieceClass} ${isActivePiece ? "" : styles.inactivePiece}`}
       style={pieceStyle}
       onClick={(event) => {
         event.stopPropagation();
@@ -77,6 +87,7 @@ const Square = memo(function Square({
   theme,
   styles,
   isCyberpunk,
+  activeTurn,
   onSquareClick,
 }: {
   row: number;
@@ -89,6 +100,7 @@ const Square = memo(function Square({
   theme: BoardTheme;
   styles: Record<string, string>;
   isCyberpunk: boolean;
+  activeTurn?: Player;
   onSquareClick: (row: number, col: number) => void;
 }) {
   const squareClasses = [
@@ -119,6 +131,7 @@ const Square = memo(function Square({
         theme={theme}
         styles={styles}
         isCyberpunk={isCyberpunk}
+        activeTurn={activeTurn}
         onSquareClick={onSquareClick}
       />
     </div>
@@ -130,6 +143,7 @@ export default memo(function Board({
   selected,
   validMoves,
   forcedCapturePieces = [],
+  activeTurn,
   onSquareClick,
   theme,
   sizeClassName = "h-[480px] w-[480px]",
@@ -138,6 +152,7 @@ export default memo(function Board({
   selected: [number, number] | null;
   validMoves: [number, number][];
   forcedCapturePieces?: [number, number][];
+  activeTurn?: Player;
   onSquareClick: (row: number, col: number) => void;
   theme?: BoardTheme;
   sizeClassName?: string;
@@ -194,6 +209,7 @@ export default memo(function Board({
           theme={currentTheme}
           styles={styles}
           isCyberpunk={isCyberpunk}
+          activeTurn={activeTurn}
           onSquareClick={onSquareClick}
         />,
       );
