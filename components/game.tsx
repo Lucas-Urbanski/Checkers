@@ -17,10 +17,12 @@ const KING_DIRECTIONS: [number, number][] = [
   [-1, -1],
   [-1, 1],
 ];
+
 const DARK_DIRECTIONS: [number, number][] = [
   [1, -1],
   [1, 1],
 ];
+
 const LIGHT_DIRECTIONS: [number, number][] = [
   [-1, -1],
   [-1, 1],
@@ -37,26 +39,28 @@ export function getPieceOwner(piece: PieceValue): Player | null {
 }
 
 export function checkForWinner(board: BoardState) {
-  let lightWins = false;
-  let darkWins = false;
+  let lightCanMove = false;
+  let darkCanMove = false;
 
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
       const owner = getPieceOwner(board[row][col]);
 
-      if (owner === "light" && !lightWins) {
-        if (getValidMoves(board, row, col).length > 0) lightWins = true;
-      }
-      if (owner === "dark" && !darkWins) {
-        if (getValidMoves(board, row, col).length > 0) darkWins = true;
+      if (owner === "light" && !lightCanMove) {
+        if (getValidMoves(board, row, col).length > 0) lightCanMove = true;
       }
 
-      if (lightWins && darkWins) return "No Winner";
+      if (owner === "dark" && !darkCanMove) {
+        if (getValidMoves(board, row, col).length > 0) darkCanMove = true;
+      }
+
+      if (lightCanMove && darkCanMove) return "No Winner";
     }
   }
 
-  if (!darkWins) return "Light Wins";
-  if (!lightWins) return "Dark Wins";
+  if (!darkCanMove) return "Light Wins";
+  if (!lightCanMove) return "Dark Wins";
+
   return "No Winner";
 }
 
@@ -74,6 +78,7 @@ function getNormalMoves(
   col: number,
 ): [number, number][] {
   const piece = board[row][col];
+
   if (!piece) return [];
 
   const moves: [number, number][] = [];
@@ -99,6 +104,7 @@ function getCaptureMoves(
   col: number,
 ): [number, number][] {
   const piece = board[row][col];
+
   if (!piece) return [];
 
   const pieceOwner = getPieceOwner(piece);
@@ -131,6 +137,7 @@ function getCaptureMoves(
 
 function findPieces(board: BoardState, player: Player): [number, number][] {
   const pieces: [number, number][] = [];
+
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
       if (getPieceOwner(board[row][col]) === player) {
@@ -138,6 +145,7 @@ function findPieces(board: BoardState, player: Player): [number, number][] {
       }
     }
   }
+
   return pieces;
 }
 
@@ -231,32 +239,37 @@ export function applyMove(
       turn: currentTurn,
       mustContinueJump: false,
       selectedPiece: null,
+      resetTieCounter: false,
     };
   }
 
   const movingPiece = board[fromRow][fromCol];
+
   if (!movingPiece) {
     return {
       board,
       turn: currentTurn,
       mustContinueJump: false,
       selectedPiece: null,
+      resetTieCounter: false,
     };
   }
 
   const rowDiff = toRow - fromRow;
   const colDiff = toCol - fromCol;
   const isCaptureMove = Math.abs(rowDiff) === 2 && Math.abs(colDiff) === 2;
+
   const nextBoard = [...board];
 
   nextBoard[fromRow] = [...nextBoard[fromRow]];
   nextBoard[toRow] = [...nextBoard[toRow]];
   nextBoard[fromRow][fromCol] = null;
-  
+
   const crownedPiece = crownPiece(movingPiece, toRow);
   nextBoard[toRow][toCol] = crownedPiece;
-  
+
   const wasJustCrowned = movingPiece !== crownedPiece;
+  const resetTieCounter = isCaptureMove || wasJustCrowned;
 
   if (isCaptureMove) {
     const capturedRow = fromRow + rowDiff / 2;
@@ -267,12 +280,14 @@ export function applyMove(
 
     if (!wasJustCrowned) {
       const nextCaptureMoves = getCaptureMoves(nextBoard, toRow, toCol);
+
       if (nextCaptureMoves.length > 0) {
         return {
           board: nextBoard,
           turn: currentTurn,
           mustContinueJump: true,
           selectedPiece: [toRow, toCol],
+          resetTieCounter,
         };
       }
     }
@@ -283,5 +298,6 @@ export function applyMove(
     turn: currentTurn === "light" ? "dark" : "light",
     mustContinueJump: false,
     selectedPiece: null,
+    resetTieCounter,
   };
 }
