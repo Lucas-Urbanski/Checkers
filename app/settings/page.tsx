@@ -221,7 +221,7 @@ export default function Settings() {
                     validMoves={[]}
                     onSquareClick={() => undefined}
                     theme={boardTheme}
-                    sizeClassName="h-[240px] w-[240px] sm:h-[300px] sm:w-[300px] md:h-[480px] md:w-[480px]"
+                    sizeClassName="h-[240px] w-[240px] sm:h-[380px] sm:w-[380px] md:h-[480px] md:w-[480px]"
                   />
                 </div>
               </div>
