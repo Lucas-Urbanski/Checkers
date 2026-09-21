@@ -15,7 +15,7 @@ import { useSettings } from "@/themes/context";
 import defaultStyles from "@/styles/default.module.css";
 import cyberpunkStyles from "@/styles/cyberpunk.module.css";
 
-const MAX_TURNS_WITHOUT_CAPTURE_OR_KING = 20;
+const MAX_TURNS_WITHOUT_CAPTURE_OR_KING = 40;
 
 const pieceBackground = (color: string) =>
   `radial-gradient(circle at 30% 30%, rgba(255,255,255,.55) 0%, ${color} 38%, ${color} 68%, rgba(0,0,0,.55) 100%)`;
