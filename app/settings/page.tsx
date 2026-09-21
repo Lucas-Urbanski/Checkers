@@ -130,7 +130,7 @@ export default function Settings() {
 
             <div className="space-y-3">
               <label className="label">Themes</label>
-              <div className="flex gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row">
                 <button
                   type="button"
                   onClick={() => handleUpdateSetting("theme", "default")}
@@ -147,7 +147,7 @@ export default function Settings() {
                   onClick={() => handleUpdateSetting("theme", "cyberpunk")}
                   className={`flex-1 rounded-xl border-2 p-4 font-bold transition-all ${
                     isCyberpunk
-                      ? "border-[#00f2fe] bg-[#001f2d] text-[#00f2fe] shadow-[0_0_15px_rgba(0,242,254,0.3)]"
+                      ? "border-[#00f2fe] bg-[#001f2d] text-[#00f2fe]"
                       : "border-gray-200 bg-gray-50 text-gray-400 hover:border-gray-300"
                   }`}
                 >
@@ -221,7 +221,7 @@ export default function Settings() {
                     validMoves={[]}
                     onSquareClick={() => undefined}
                     theme={boardTheme}
-                    sizeClassName="h-[320px] w-[320px] sm:h-[420px] sm:w-[420px]"
+                    sizeClassName="h-[280px] w-[280px] sm:h-[300px] sm:w-[300px] md:h-[480px] md:w-[480px]"
                   />
                 </div>
               </div>
@@ -284,7 +284,7 @@ function ColorPicker({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="grid gap-2 sm:grid-cols-[140px_1fr] sm:items-center">
+    <div className="grid gap-2">
       <label className="text-xs font-black uppercase tracking-widest text-[#855f42]">
         {title}
       </label>

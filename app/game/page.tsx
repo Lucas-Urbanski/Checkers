@@ -144,7 +144,7 @@ export default function Game() {
             forcedCapturePieces={forcedCapturePieces}
             activeTurn={turn}
             onSquareClick={handleSquareClick}
-            sizeClassName="h-[480px] w-[480px]"
+            sizeClassName="h-[380px] w-[380px] sm:h-[400px] sm:w-[400px] md:h-[480px] md:w-[680px] lg:h-[580px] lg:w-[580px]"
           />
 
           <div
